@@ -275,19 +275,22 @@ python -m app.cli.commands apply_scenario scenario_ship_004_anchor_arrival
 python -m app.cli.commands run_standby_agent <agent_id> test-user
 ```
 
-Freshness-warning example (ship-007):
-
 ```bash
 python -m app.cli.commands create_standby_agent \
-  "When this shipment shows a freshness warning, send me an email." \
-  email \
+  "When the ETA shifts or ETA confidence drops for this shipment, generate a document." \
+  document \
   ship-007 \
   30 \
   test-user \
   test@example.com
 
 python -m app.cli.commands run_standby_agent <agent_id> test-user
+```
+
+# Apply the updated scenario (injects the ETA revision + 7-day slip)
 python -m app.cli.commands apply_scenario scenario_stale_position_feed
+
+# Run the agent
 python -m app.cli.commands run_standby_agent <agent_id> test-user
 
 # Inspect run history and notifications
