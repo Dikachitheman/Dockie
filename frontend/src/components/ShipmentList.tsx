@@ -50,7 +50,7 @@ export default function ShipmentList({ shipments, selectedId, onSelect }: Shipme
   });
 
   return (
-    <div className="flex h-full w-[380px] flex-col bg-apple-surface">
+    <div className="hidden lg:flex h-full w-[280px] xl:w-[380px] shrink-0 flex-col bg-apple-surface">
       <div className="px-6 pb-4 pt-6">
         <h2 className="text-xl font-semibold text-apple-text">Shipments</h2>
         <div className="mt-4 flex gap-2">

@@ -24,9 +24,9 @@ export default function HomeOverview({ shipments, agents, notifications }: HomeO
   const recentlyFired = agents.find((agent) => agent.status === "fired");
 
   return (
-    <div className="flex flex-1 overflow-y-auto bg-[#f7f5ef] p-8 scrollbar-thin">
-      <div className="mx-auto w-full max-w-6xl space-y-6">
-        <div className="rounded-[28px] bg-[radial-gradient(circle_at_top_left,#f6d67c_0%,#d9e4f7_35%,#f8f5ef_100%)] p-8 shadow-apple">
+    <div className="flex flex-1 overflow-y-auto bg-[#f7f5ef] p-4 sm:p-8 scrollbar-thin">
+      <div className="mx-auto w-full max-w-6xl space-y-4 sm:space-y-6">
+        <div className="rounded-[20px] sm:rounded-[28px] bg-[radial-gradient(circle_at_top_left,#f6d67c_0%,#d9e4f7_35%,#f8f5ef_100%)] p-5 sm:p-8 shadow-apple">
           <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-apple-secondary">
             <Sparkles className="h-4 w-4 text-apple-blue" strokeWidth={1.5} />
             Daily Control Tower

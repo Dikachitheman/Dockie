@@ -132,8 +132,8 @@ export default function SourceHealthDashboard({
   }, [selectedShipment, useDummyData, refreshKey]);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white p-8 scrollbar-thin">
-      <div className="mx-auto max-w-6xl space-y-6">
+    <div className="flex-1 overflow-y-auto bg-white p-4 sm:p-8 scrollbar-thin">
+      <div className="mx-auto max-w-6xl space-y-4 sm:space-y-6">
         <div className="rounded-[24px] bg-[linear-gradient(135deg,#07111f_0%,#17334f_100%)] p-6 text-white shadow-apple">
           <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/70">
             <Activity className="h-4 w-4" strokeWidth={1.5} />

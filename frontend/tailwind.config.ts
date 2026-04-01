@@ -39,6 +39,7 @@ export default {
         "pulse-dot": "pulse-dot 1.5s ease-in-out infinite",
         "pulse-ring": "pulse-ring 1.5s ease-out infinite",
         "fade-in": "fade-in 0.6s ease-in-out both",
+        "roll-in": "roll-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

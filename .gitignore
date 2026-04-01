@@ -13,7 +13,7 @@
 # Never commit secrets
 **/.env
 **/.env.*
-!**/.env.example
+# !**/.env.example
 
 # Ignore dependency/build folders
 **/node_modules/

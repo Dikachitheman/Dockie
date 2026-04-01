@@ -168,7 +168,7 @@ export default function StandbyAgentsView({
           </nav>
         </div>
 
-        <div className="min-w-0 flex-1 space-y-6 overflow-y-auto p-6">
+        <div className="min-w-0 flex-1 space-y-4 overflow-y-auto p-4 sm:space-y-6 sm:p-6">
           {/* Mobile nav */}
           <div className="flex gap-2 overflow-x-auto pb-1 lg:hidden">
             {([
@@ -281,10 +281,10 @@ export default function StandbyAgentsView({
             ) : (
               agents.map((agent) => (
                 <div key={agent.id} className="apple-card p-6">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Radio className={`h-4 w-4 ${agent.status === "active" ? "text-apple-blue" : agent.status === "fired" ? "text-apple-amber" : "text-apple-secondary"}`} strokeWidth={1.5} />
+                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start gap-2">
+                        <Radio className={`mt-0.5 h-4 w-4 shrink-0 ${agent.status === "active" ? "text-apple-blue" : agent.status === "fired" ? "text-apple-amber" : "text-apple-secondary"}`} strokeWidth={1.5} />
                         <span className="text-sm font-semibold text-apple-text">{agent.conditionText}</span>
                       </div>
                       <p className="mt-2 text-xs text-apple-secondary">
@@ -293,7 +293,7 @@ export default function StandbyAgentsView({
                       {agent.lastResult && <p className="mt-2 text-sm text-apple-secondary">{agent.lastResult}</p>}
                       {buildCheckSummary(agent) && <p className="mt-2 text-xs font-medium text-apple-secondary/80">{buildCheckSummary(agent)}</p>}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <span className={`rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${
                         agent.status === "active"
                           ? "bg-[#eef6ff] text-apple-blue"
@@ -326,7 +326,7 @@ export default function StandbyAgentsView({
                       </button>
                     </div>
                   </div>
-                  <div className="mt-4 grid gap-3 md:grid-cols-4 text-xs">
+                  <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4 text-xs">
                     <div className="rounded-[14px] bg-apple-surface p-3">
                       <p className="text-apple-secondary">Last checked</p>
                       <p className="mt-1 font-medium text-apple-text">{agent.lastCheckedAt ? new Date(agent.lastCheckedAt).toLocaleString() : "Never"}</p>
@@ -396,17 +396,34 @@ export default function StandbyAgentsView({
                     {/* Content preview */}
                     <div className="px-6 py-5">
                       {output.outputType === "spreadsheet" ? (
-                        <div className="overflow-x-auto rounded-[12px] border border-apple-divider bg-apple-surface">
+                        <div className={`overflow-x-auto rounded-[12px] border bg-apple-surface ${typeConfig.borderColor}`}>
                           <pre className="line-clamp-5 whitespace-pre-wrap p-4 font-mono text-[12px] leading-relaxed text-apple-text">{output.content}</pre>
+                        </div>
+                      ) : output.outputType === "report" ? (
+                        <div className="rounded-[12px] border border-[#c8deff] bg-[#f8fbff] p-4">
+                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
+                        </div>
+                      ) : output.outputType === "document" ? (
+                        <div className="rounded-[12px] border border-[#d8c8ff] bg-[#faf8ff] p-4">
+                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
+                        </div>
+                      ) : output.outputType === "email" ? (
+                        <div className="rounded-[12px] border border-[#ffd6b8] bg-[#fffaf6] p-4">
+                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
                         </div>
                       ) : (
                         <div className="rounded-[12px] bg-apple-surface p-4">
                           <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
                         </div>
                       )}
-                      <p className="mt-3 text-[11px] text-apple-secondary/60">
-                        {output.createdAt ? new Date(output.createdAt).toLocaleString() : "Pending"}
-                      </p>
+                      <div className="mt-3 flex items-center justify-between">
+                        <p className="text-[11px] text-apple-secondary/60">
+                          {output.createdAt ? new Date(output.createdAt).toLocaleString() : "Pending"}
+                        </p>
+                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${typeConfig.iconBg} ${typeConfig.iconColor}`}>
+                          {output.outputType}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   );

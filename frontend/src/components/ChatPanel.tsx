@@ -300,7 +300,7 @@ function AgentStatusPill({
 
   return (
     <div className="mb-3 flex justify-start">
-      <div style={{ maxWidth: "75%" }}>
+      <div style={{ maxWidth: "85%" }}>
         {/* Stage summary + dots */}
         <div className="mb-2 flex items-center gap-2">
           <TypingIndicator />
@@ -974,10 +974,10 @@ function DemurrageRiskCard({
         </div>
         <div className="mt-4 flex gap-2">
           <button type="button" onClick={() => onAsk(`What do I need to do to avoid demurrage on ${shipment.bookingReference}?`)} className="apple-btn-secondary flex-1 px-4 py-2 text-xs">
-            How to avoid this
+            ✨ How to avoid this
           </button>
           <button type="button" onClick={() => onAsk(`Show me the clearance checklist for ${shipment.bookingReference}`)} className="apple-btn-secondary flex-1 px-4 py-2 text-xs">
-            Clearance checklist
+            ✨ Clearance checklist
           </button>
         </div>
       </div>
@@ -1037,7 +1037,7 @@ function VoyageTimelineCard({
         ))}
       </div>
       <button type="button" onClick={() => onAsk(`What changed on ${shipment.bookingReference} since yesterday?`)} className="apple-btn-secondary mt-3 w-full px-4 py-2 text-xs">
-        What changed since yesterday?
+        ✨ What changed since yesterday?
       </button>
     </div>
   );
@@ -1064,10 +1064,10 @@ function StandbyAlertCard({
         <p className="mt-2 text-sm leading-relaxed text-apple-secondary">{notification.detail}</p>
         <div className="mt-4 flex gap-2">
           <button type="button" onClick={() => onAsk("What should I do now?")} className="rounded-full bg-apple-blue px-4 py-2 text-xs font-medium text-white">
-            What do I do now?
+            ✨ What do I do now?
           </button>
           <button type="button" onClick={() => onAsk("Show demurrage exposure for this shipment")} className="apple-btn-secondary px-4 py-2 text-xs">
-            Check demurrage
+            ✨ Check demurrage
           </button>
         </div>
       </div>
@@ -1161,8 +1161,8 @@ function ShipmentComparisonStrip({
       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-apple-secondary">Shipment comparison</p>
 
       {/* Comparison table */}
-      <div className="overflow-hidden rounded-[14px] border border-apple-divider">
-        <table className="w-full text-left text-xs">
+      <div className="overflow-x-auto rounded-[14px] border border-apple-divider">
+        <table className="w-full min-w-[400px] text-left text-xs">
           <thead>
             <tr className="border-b border-apple-divider bg-apple-surface/70">
               <th className="w-[30%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-apple-secondary">Field</th>
@@ -1267,7 +1267,7 @@ function ShipmentComparisonStrip({
       </div>
 
       <button type="button" onClick={() => onAsk("Compare my two active shipments and tell me which needs more attention")} className="apple-btn-secondary w-full px-4 py-2 text-xs">
-        Ask for full comparison
+        ✨ Ask for full comparison
       </button>
     </div>
   );
@@ -1819,10 +1819,10 @@ export default function ChatPanel({
 
   const quickQuestions = useMemo(
     () => [
-      "Where is this shipment now?",
-      "How reliable is the current ETA?",
-      "Which vessel is carrying this shipment?",
-      "Summarize the latest tracking update.",
+      "✨ Where is this shipment now?",
+      "✨ How reliable is the current ETA?",
+      "✨ Which vessel is carrying this shipment?",
+      "✨ Summarize the latest tracking update.",
     ],
     [],
   );
@@ -2405,11 +2405,11 @@ export default function ChatPanel({
   return (
     <div className="flex h-full bg-white">
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="border-b border-apple-divider/70 px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-apple-text">{vesselName}</h3>
-              <span className="apple-badge-blue">{formatStatus(shipment.status)}</span>
+        <div className="border-b border-apple-divider/70 px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <h3 className="truncate text-base sm:text-lg font-semibold text-apple-text">{vesselName}</h3>
+              <span className="apple-badge-blue shrink-0">{formatStatus(shipment.status)}</span>
             </div>
             <div className="hidden items-center gap-2 lg:flex">
               <span className="rounded-full bg-[#eef6ff] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-apple-blue">
@@ -2422,7 +2422,7 @@ export default function ChatPanel({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto px-3 py-3 sm:px-6 sm:py-4 scrollbar-thin">
           {messages.map((message, index) => {
             const isStreaming = streamingMessageId === message.id && isSubmitting && !message.content;
             const isStreamingMessage = streamingMessageId === message.id && isSubmitting;
@@ -2472,23 +2472,24 @@ export default function ChatPanel({
                   </div>
                 )}
                 <div className={`mb-5 flex animate-fade-in ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className="max-w-[75%] space-y-2">
+                  <div className="max-w-[95%] sm:max-w-[85%] md:max-w-[75%] space-y-2">
                     {message.content && (
                       <div
-                        className={`px-4 py-3 text-sm leading-relaxed ${message.role === "user" ? "rounded-[18px] rounded-br-[6px] bg-apple-blue text-white" : "apple-card rounded-[18px] rounded-bl-[6px] p-4 text-apple-text"}`}
+                        className={`px-4 py-3 text-sm leading-relaxed ${message.role === "user" ? "rounded-[18px] rounded-br-[6px] bg-apple-blue text-white" : message.isError ? "rounded-[18px] rounded-bl-[6px] border border-red-200 bg-red-50 p-4 text-red-700" : "apple-card rounded-[18px] rounded-bl-[6px] p-4 text-apple-text"}`}
                       >
+                        {message.isError && <span className="mr-1.5">⚠️</span>}
                         {renderedContent}
                       </div>
                     )}
                     {message.role === "assistant" && message.content && !isStreamingMessage && !message.isError && (
                       <div className="space-y-3">
                         {index === messages.length - 1 && latestShipmentNotification && latestShipmentNotification.unread && (
-                          <div className="animate-fade-in" style={{ animationDelay: "0ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "0ms" }}>
                             <StandbyAlertCard notification={latestShipmentNotification} onAsk={(text) => void sendMessage(text)} />
                           </div>
                         )}
                         {index === messages.length - 1 && showShipmentComparison && shipmentComparison && (
-                          <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "150ms" }}>
                             <ShipmentComparisonStrip
                               comparison={shipmentComparison}
                               shipments={shipments}
@@ -2501,41 +2502,41 @@ export default function ChatPanel({
                         {visibleRichComponents.length > 0 && (
                           <div className="space-y-3">
                             {visibleRichComponents.includes("tracking") && (
-                              <div className="animate-fade-in" style={{ animationDelay: "180ms" }}>
+                              <div className="animate-roll-in" style={{ animationDelay: "250ms" }}>
                                 {messageResponseMode === "concise"
                                   ? <TrackingMapCard shipment={shipment} />
                                   : <TrackingCompositeCard shipment={shipment} showTable={showTable} showProgress={showProgress} />}
                               </div>
                             )}
                             {messageResponseMode !== "concise" && visibleRichComponents.includes("evidence") && (
-                              <div className="animate-fade-in" style={{ animationDelay: "280ms" }}>
+                              <div className="animate-roll-in" style={{ animationDelay: "450ms" }}>
                                 <EvidenceCard shipment={shipment} />
                               </div>
                             )}
                             {messageResponseMode !== "concise" && visibleRichComponents.includes("graph") && (
-                              <div className="animate-fade-in" style={{ animationDelay: "380ms" }}>
+                              <div className="animate-roll-in" style={{ animationDelay: "650ms" }}>
                                 <TrendGraphCard shipment={shipment} />
                               </div>
                             )}
                           </div>
                         )}
                         {messageResponseMode !== "concise" && (index === messages.length - 1 || hasMessageSources) && (
-                          <div className="animate-fade-in" style={{ animationDelay: "480ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "800ms" }}>
                             <ResponseMetaBar shipment={shipment} webSearchResults={messageWebSearchResults} />
                           </div>
                         )}
                         {messageResponseMode === "verbose" && (index === messages.length - 1 || hasMessageSources) && (
-                          <div className="animate-fade-in" style={{ animationDelay: "580ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "950ms" }}>
                             <SourceBadgeStrip webSearchResults={messageWebSearchResults} knowledgeSnippets={messageKnowledgeSnippets} />
                           </div>
                         )}
                         {messageResponseMode !== "concise" && (messageWebSearchResults.length > 0 || messageWebSearchNotice) && (
-                          <div className="animate-fade-in" style={{ animationDelay: "680ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "1100ms" }}>
                             <WebSearchResultsCard results={messageWebSearchResults} notice={messageWebSearchNotice} />
                           </div>
                         )}
                         {index === messages.length - 1 && showStandbyCreator && (
-                          <div className="animate-fade-in" style={{ animationDelay: "780ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "1250ms" }}>
                             <InlineStandbyCreatorCard
                               shipment={shipment}
                               messages={messages}
@@ -2545,12 +2546,12 @@ export default function ChatPanel({
                           </div>
                         )}
                         {index === messages.length - 1 && demurrageExposure && (
-                          <div className="animate-fade-in" style={{ animationDelay: "880ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "1400ms" }}>
                             <DemurrageRiskCard shipment={shipment} exposure={demurrageExposure} onAsk={(text) => void sendMessage(text)} />
                           </div>
                         )}
                         {index === messages.length - 1 && showVoyageTimeline && (
-                          <div className="animate-fade-in" style={{ animationDelay: "980ms" }}>
+                          <div className="animate-roll-in" style={{ animationDelay: "1550ms" }}>
                             <VoyageTimelineCard shipment={shipment} onAsk={(text) => void sendMessage(text)} />
                           </div>
                         )}
@@ -2586,7 +2587,7 @@ export default function ChatPanel({
         </div>
 
         {messages.length <= 1 && (
-          <div className="flex flex-wrap gap-2 px-6 pb-3">
+          <div className="flex flex-wrap gap-2 px-3 pb-3 sm:px-6">
             {quickQuestions.map((question) => (
               <button key={question} onClick={() => void sendMessage(question)} className="apple-btn-secondary px-4 py-2 text-xs transition-all duration-150 active:scale-[0.97]">
                 {question}
@@ -2595,7 +2596,7 @@ export default function ChatPanel({
           </div>
         )}
 
-        <div className="border-t border-apple-divider/50 px-5 pb-4 pt-3">
+        <div className="border-t border-apple-divider/50 px-3 pb-3 pt-2 sm:px-5 sm:pb-4 sm:pt-3">
           {isStandbyMode && (
             <div className="mb-3 flex flex-wrap items-center gap-2 rounded-[14px] bg-[#eef6ff] px-4 py-2.5">
               <span className="text-xs font-semibold text-apple-blue">Watcher</span>
@@ -2638,7 +2639,7 @@ export default function ChatPanel({
                       type="button"
                       onMouseDown={(e) => {
                         e.preventDefault();
-                        setInput((prev) => prev.replace(/@\S*$/, `@${name} `));
+                        setInput((prev) => prev.replace(/@\S*$/, `${name} `));
                         setMentionQuery(null);
                       }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-apple-surface"

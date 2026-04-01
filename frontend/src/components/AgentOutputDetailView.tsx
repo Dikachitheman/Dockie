@@ -43,8 +43,8 @@ export default function AgentOutputDetailView({ output, onBack }: AgentOutputDet
   const TypeIcon = cfg.icon;
 
   return (
-    <div className="flex flex-1 overflow-y-auto bg-white p-8 scrollbar-thin">
-      <div className="mx-auto w-full max-w-4xl space-y-6">
+    <div className="flex flex-1 overflow-y-auto bg-white p-4 sm:p-8 scrollbar-thin">
+      <div className="mx-auto w-full max-w-4xl space-y-4 sm:space-y-6">
         {/* Type-styled hero header */}
         <div className={`overflow-hidden rounded-[24px] border shadow-apple ${cfg.borderColor}`}>
           <div className={`${cfg.headerGradient} px-6 py-6`}>
@@ -75,7 +75,7 @@ export default function AgentOutputDetailView({ output, onBack }: AgentOutputDet
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <div className="apple-card p-4">
             <p className="text-[11px] uppercase tracking-[0.12em] text-apple-secondary">Type</p>
             <p className={`mt-2 text-sm font-semibold capitalize ${cfg.accentText}`}>{output.outputType}</p>
@@ -102,15 +102,17 @@ export default function AgentOutputDetailView({ output, onBack }: AgentOutputDet
             <span className="apple-badge-blue">{output.outputType}</span>
           </div>
           {output.outputType === "spreadsheet" ? (
-            <div className="mt-4 overflow-x-auto rounded-[16px] border border-apple-divider bg-apple-surface">
+            <div className={`mt-4 overflow-x-auto rounded-[16px] border ${cfg.borderColor} bg-apple-surface`}>
               <pre className="whitespace-pre-wrap break-words p-4 font-mono text-[13px] leading-relaxed text-apple-text">
                 {output.content}
               </pre>
             </div>
           ) : (
-            <pre className="mt-4 whitespace-pre-wrap break-words rounded-[16px] bg-apple-surface p-4 text-sm leading-relaxed text-apple-text">
-              {output.content}
-            </pre>
+            <div className={`mt-4 rounded-[16px] border ${cfg.borderColor} ${cfg.headerGradient}`}>
+              <pre className="whitespace-pre-wrap break-words p-5 text-sm leading-relaxed text-apple-text">
+                {output.content}
+              </pre>
+            </div>
           )}
         </div>
       </div>

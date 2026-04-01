@@ -442,7 +442,7 @@ const Index = ({ user }: { user?: User }) => {
   }, [navigate, outputReturnView]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
+    <div className="flex h-screen overflow-hidden bg-white pt-14 md:pt-0">
       <AppSidebar activeView={activeView} onViewChange={handleViewChange} unreadNotifications={unreadNotifications} user={user} />
 
       {(visitedViews.has("shipments") || visitedViews.has("tracking")) && (
@@ -452,7 +452,7 @@ const Index = ({ user }: { user?: User }) => {
       )}
 
       {visitedViews.has("shipments") && (
-        <div className={activeView === "shipments" ? "flex-1 min-w-0" : "hidden"}>
+        <div className={activeView === "shipments" ? "flex flex-1 min-w-0" : "hidden"}>
           {pageError ? (
             <EmptyState text={pageError} />
           ) : shipmentsLoading ? (
@@ -479,7 +479,7 @@ const Index = ({ user }: { user?: User }) => {
       )}
 
       {visitedViews.has("tracking") && (
-        <div className={activeView === "tracking" ? "flex-1 min-w-0" : "hidden"}>
+        <div className={activeView === "tracking" ? "flex flex-1 min-w-0" : "hidden"}>
           {pageError ? (
             <EmptyState text={pageError} />
           ) : shipmentsLoading ? (

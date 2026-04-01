@@ -1,5 +1,28 @@
 {
+  "shipment_updates": [
+    {
+      "shipment_id": "ship-007",
+      "declared_eta_date": "2026-04-09T00:00:00Z"
+    }
+  ],
+  "eta_revisions": [
+    {
+      "shipment_id": "ship-007",
+      "carrier": "sallaum",
+      "revision_at": "2026-04-01T06:00:00Z",
+      "previous_eta": "2026-04-02T00:00:00Z",
+      "new_eta": "2026-04-09T00:00:00Z",
+      "source": "simulated_stale_feed"
+    }
+  ],
   "knowledge_docs": [
-    { "source_name": "scenario_stale_position_feed", "source_type": "scenario_note", "shipment_id": "ship-007", "title": "Stale feed note", "content": "The simulated position feed for ship-007 has not refreshed within the expected window. Treat ETA confidence as reduced.", "metadata": { "scenario": "stale_position_feed" } }
+    {
+      "source_name": "scenario_stale_position_feed",
+      "source_type": "scenario_note",
+      "shipment_id": "ship-007",
+      "title": "Stale feed note",
+      "content": "The simulated position feed for ship-007 has not refreshed within the expected window. The carrier has revised the ETA by 7 days due to congestion. Treat ETA confidence as reduced.",
+      "metadata": { "scenario": "stale_position_feed" }
+    }
   ]
 }
