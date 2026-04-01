@@ -2,6 +2,8 @@
 
 A production-minded MVP backend for a shipment-tracking copilot for customers shipping vehicles by sea on the US–West Africa ro-ro corridor.
 
+Note: a `.env.example` file is included at the repository root — copy it to `.env` and edit values before running the project.
+
 ## Quick Start
 
 ### Prerequisites
@@ -28,6 +30,12 @@ curl http://localhost:8000/shipments
 
 The API will be live at **http://localhost:8000**.  
 Interactive docs: **http://localhost:8000/docs**
+
+Tip: to open an interactive shell in the running container, run:
+
+```bash
+docker exec -it dockie-app /bin/sh
+```
 
 ---
 

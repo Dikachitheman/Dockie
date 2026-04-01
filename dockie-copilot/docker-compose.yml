@@ -2,7 +2,10 @@ version: "3.9"
 
 services:
   db:
-    image: ankane/pgvector:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    image: dockie-postgres:15-postgis-pgvector
     container_name: dockie-db
     restart: unless-stopped
     environment:
@@ -18,8 +21,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    command: >
-      bash -c "docker-entrypoint.sh postgres &\n      sleep 5 &&\n      psql -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot} -c 'CREATE EXTENSION IF NOT EXISTS postgis;' &&\n      psql -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot} -c 'CREATE EXTENSION IF NOT EXISTS vector;' &&\n      wait"
+    command:
+      - bash
+      - -c
+      - |
+          set -e
+          docker-entrypoint.sh postgres &
+          sleep 5
+          psql -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot} -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+          psql -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot} -c 'CREATE EXTENSION IF NOT EXISTS vector;'
+          wait
 
   app:
     build:
@@ -36,12 +47,13 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
       SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
+      ADK_SESSION_DB_URL: postgresql+asyncpg://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
     ports:
       - "8000:8000"
     volumes:
       - ./tests/fixtures:/app/tests/fixtures:ro
     command: >
-      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+      sh -c "alembic upgrade head && python -m app.cli.commands ingest_if_empty && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   standby-worker:
     build:
@@ -53,15 +65,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      app:
+        condition: service_started
     env_file:
       - .env
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
       SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
+      ADK_SESSION_DB_URL: postgresql+asyncpg://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
     volumes:
       - ./tests/fixtures:/app/tests/fixtures:ro
     command: >
-      sh -c "alembic upgrade head && python -m app.cli.commands standby_worker"
+      sh -c "alembic upgrade head && python -m app.cli.commands ingest_if_empty && python -m app.cli.commands standby_worker"
 
 volumes:
   postgres_data:

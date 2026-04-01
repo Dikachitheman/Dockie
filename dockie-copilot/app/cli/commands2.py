@@ -3,7 +3,6 @@ CLI entry points.
 
 Usage:
   python -m app.cli.commands ingest
-  python -m app.cli.commands ingest_if_empty
   python -m app.cli.commands refresh
   python -m app.cli.commands live_refresh
   python -m app.cli.commands simulated_refresh [run_name]
@@ -109,28 +108,6 @@ async def _cmd_ingest() -> None:
     await invalidate_cache_prefix("shipments:list")
     await invalidate_cache_prefix("sources:")
     logger.info("cli_ingest_done")
-
-
-async def _cmd_ingest_if_empty() -> None:
-    """Load fixtures only when the database has no shipments (Docker bootstrap)."""
-    from app.core.logging import configure_logging
-    from app.core.config import get_settings
-    from app.infrastructure.cache import invalidate_cache_prefix
-    from app.infrastructure.database import AsyncSessionFactory
-    from app.infrastructure.ingest import ensure_fixture_data_if_empty
-
-    settings = get_settings()
-    configure_logging(settings.log_level)
-
-    logger.info("cli_ingest_if_empty_start")
-    async with AsyncSessionFactory() as session:
-        ran = await ensure_fixture_data_if_empty(session)
-    if ran:
-        await invalidate_cache_prefix("shipments:list")
-        await invalidate_cache_prefix("sources:")
-        logger.info("cli_ingest_if_empty_ran_full_ingest")
-    else:
-        logger.info("cli_ingest_if_empty_skipped_existing_data")
 
 
 # ---------------------------------------------------------------------------
@@ -638,7 +615,6 @@ async def _cmd_standby_worker(run_once: bool = False) -> None:
 
 COMMANDS = {
     "ingest": _cmd_ingest,
-    "ingest_if_empty": _cmd_ingest_if_empty,
     "refresh": _cmd_refresh,
     "live_refresh": _cmd_live_refresh,
     "simulated_refresh": _cmd_simulated_refresh,
