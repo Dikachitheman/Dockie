@@ -1,0 +1,6 @@
+{
+  "observations": [
+    { "port_locode": "NGLOS", "terminal_name": "Tin Can Island", "vessel_name": "GREAT LUANDA", "vessel_imo": "9953303", "vessel_mmsi": "357555444", "status": "under_way_using_engine", "event_type": "approach_update", "detail": "Vessel remains underway on approach and has not yet been confirmed in a waiting state.", "source": "simulated_port_watch", "observed_at": "2026-03-31T16:05:00Z" },
+    { "port_locode": "NGAPP", "terminal_name": "Apapa", "vessel_name": "GREAT COTONOU", "vessel_imo": "9922345", "vessel_mmsi": "311000111", "status": "approach_normal", "event_type": "port_update", "detail": "Port approach is active and moving normally in the default baseline.", "source": "simulated_port_watch", "observed_at": "2026-03-31T17:05:00Z" }
+  ]
+}

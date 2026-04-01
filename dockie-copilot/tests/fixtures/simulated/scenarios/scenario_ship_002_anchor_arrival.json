@@ -1,0 +1,32 @@
+{
+  "positions": [
+    {
+      "source": "scenario_ship_002_anchor_arrival",
+      "observed_at": "2026-03-30T08:45:00Z",
+      "mmsi": "311000111",
+      "imo": "9922345",
+      "vessel_name": "GREAT COTONOU",
+      "latitude": 6.24,
+      "longitude": 3.31,
+      "sog_knots": 0.1,
+      "cog_degrees": 11.0,
+      "heading_degrees": 9,
+      "navigation_status": "at_anchor",
+      "destination_text": "TIN CAN"
+    }
+  ],
+  "port_observations": [
+    {
+      "port_locode": "NGAPP",
+      "terminal_name": "Apapa Anchorage",
+      "vessel_name": "GREAT COTONOU",
+      "vessel_imo": "9922345",
+      "vessel_mmsi": "311000111",
+      "status": "at_anchor",
+      "event_type": "anchor_arrival",
+      "detail": "Vessel has reached anchorage and is awaiting berth assignment.",
+      "source": "scenario_ship_002_anchor_arrival",
+      "observed_at": "2026-03-30T08:45:00Z"
+    }
+  ]
+}

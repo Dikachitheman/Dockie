@@ -1,0 +1,883 @@
+Dockie Applied AI Engineer Take-Home
+Overview
+Build a production-minded MVP for a shipment-tracking copilot for customers shipping vehicles by sea.
+This is an applied AI assignment. We are not looking for a perfect global shipping platform. We are looking for a clear, working product that shows good engineering judgment, solid AI UX, and strong software practices.
+You may use AI tools such as Cursor, Copilot, or similar during the exercise. We care about the quality of your decisions, implementation, and explanation.
+Timebox
+Recommended effort: up to 1 week
+You do not need to build everything perfectly
+We will evaluate your work relative to the time available and in comparison with other candidates
+Compensation
+This take-home is paid
+You will receive $50 for completing and submitting the task, whether or not your submission is approved or you move forward in the process
+Product Scenario
+Your user has one or more vehicles being shipped on ro-ro vessels from the US to West Africa.
+They want to:
+see all of their active shipments
+select a shipment and ask questions by text or voice
+understand where the shipment is now
+understand what vessel it is on
+understand latest position, speed, course, ETA, and recent changes
+see a map rendered in the chat experience
+hear a spoken response from the assistant
+The system should answer grounded questions such as:
+"Where is my shipment right now?"
+"What vessel is it on?"
+"How fast is it moving?"
+"When will it arrive in Lagos?"
+"What changed since yesterday?"
+"How reliable is this answer?"
+Core Deliverable
+Build a shipment-tracking copilot with:
+a clean, working frontend
+a backend with real application structure
+an agent that uses tools or structured retrieval
+support for multiple shipments
+map rendering inside the chat experience
+voice input and spoken output
+clear explanation of how the system was built
+Required Stack
+The following stack choices are compulsory for this take-home:
+Python backend
+FastAPI
+Postgres
+Google ADK
+AG-UI
+You may add other libraries or supporting services if needed, but the core implementation must use the stack above.
+Frontend Requirements
+The frontend should be polished enough to feel like a real product, not a prototype thrown together at the last minute.
+Required:
+shipment list or overview screen
+ability to open and switch between multiple shipments
+chat interface for text interaction
+voice input
+spoken response output
+map card or rich tracking card rendered inside chat
+structured shipment details shown alongside the conversation
+Design direction:
+We will provide a few UI reference screenshots as inspiration
+You do not need to match them exactly
+We care more about clarity, polish, and interaction quality than visual mimicry
+Agent And AI Requirements
+Required:
+use Google ADK for the agent layer
+use AG-UI for the agent-driven UI experience
+The agent should:
+answer with grounded data, not free-form guessing
+use tools, APIs, or structured retrieval where appropriate
+render rich UI state in chat when useful
+surface evidence, freshness, or confidence where relevant
+handle follow-up questions across the same session
+Strong plus:
+explicit handling of prompt injection or malicious retrieved content
+safe tool-calling boundaries
+visible explanation of why an answer may be stale or uncertain
+Backend Requirements
+Build a real backend, not just a mocked frontend.
+Required:
+Python backend using FastAPI
+relational database using Postgres
+clear application structure with separation of concerns
+HTTP API for the app
+at least one CLI workflow for refresh, ingest, or diagnostics
+containerized local setup with docker compose
+migrations
+basic automated tests for meaningful logic
+Recommended architecture:
+domain logic
+application orchestration
+infrastructure adapters
+external interfaces
+Data Requirements
+Your system should ingest at least 2 source types, for example:
+shipment or order data
+vessel position data
+schedule or route-intent data
+Required:
+persist raw upstream payloads before normalization
+normalize into canonical records such as shipment, vessel, position, voyage, event, and evidence
+support freshness tracking and degraded or stale states
+make source provenance visible in either the UI, API, or logs
+You may use a mix of:
+provided fixtures
+one or more live integrations
+your own simulated refresh workflows
+You will not be penalized for using fixtures if your system design is strong and the product works well.
+Security And Reliability Expectations
+We will score heavily for software quality, not just demo quality.
+Please demonstrate thoughtfulness around:
+prompt injection and unsafe retrieved content
+secrets and environment configuration
+source freshness and stale-data handling
+graceful degradation when a source fails
+provenance and evidence visibility
+sensible logging and traceability
+If a source is stale, fragile, or partially trusted, the system should say so instead of acting overly certain.
+Provided Resources
+We will provide:
+UI reference screenshots for design direction
+tests/fixtures/challenge_resource_pack.json
+tests/fixtures/challenge_live_stack_snapshot.json
+tests/fixtures/challenge_malicious_payload.json
+docs/challenge-source-policy-guide.md
+docs/challenge-resource-pack.md for usage notes and expectations
+These files include:
+shipment, vessel-position, and vessel-history fixtures
+malformed and stale payload examples
+one intentionally malicious payload for safe-handling testing
+a non-sensitive live stack snapshot with example API and database shapes
+source classification and operational policy guidance
+You may also use the Google ADK integrations catalog for ideas on practical extensions such as email reminders or other agent integrations:
+Google ADK integrations
+Source Policy
+Treat sources according to explicit classes rather than assuming all public-looking sources are equally safe.
+Supported source classes:
+open_data
+public_api_terms
+noncommercial_or_license_limited
+analyst_reference_only
+Your implementation should preserve source metadata where practical, including:
+name
+source_class
+automation_safety
+business_safe_default
+role
+health_expectation
+fallback_behavior
+For this take-home, we care especially that you can:
+distinguish business-safe product dependencies from analyst-only references
+degrade cleanly when fragile sources break
+keep provenance visible
+Suggested Source Directions
+You do not need to use all of these.
+Examples:
+AISstream for best-effort live AIS bootstrap
+Sallaum public schedules for route intent
+Grimaldi public fleet or service pages for fleet and route context
+official sanctions lists for business-safe enrichment
+MarineCadastre for historical backfill or fixtures
+Examples that should remain optional, cautious, or analyst-first:
+Nigerian Ports Authority Shipping Position
+Equasis
+IMO GISIS
+OpenSanctions if licensing is not appropriate for a business-safe default
+What Success Looks Like
+Strong submissions usually have these properties:
+the frontend is clean and pleasant to use
+the app clearly supports multiple shipments
+answers are grounded and traceable
+the map or rich card experience works inside chat
+voice interaction works end-to-end
+the backend feels production-minded
+the README and architecture explanation are clear and honest about trade-offs
+What Is Out Of Scope
+You do not need to build:
+a perfect global vessel tracker
+a full enterprise auth system
+a premium-data-dependent product
+Submission Requirements
+Please submit:
+a GitHub repository
+a README.md with setup and run instructions
+an ARCHITECTURE.md explaining your design and trade-offs
+a short demo video, ideally 5 to 8 minutes (not necessary (optional) if deployed demo available)
+a deployed demo if available, or a fully reproducible local setup
+Your ARCHITECTURE.md should cover:
+the stack you chose and why
+how the agent works
+how tools, retrieval, or structured data are used
+how rich UI content is rendered in chat
+how you handled freshness, degradation, and evidence
+how you handled security concerns such as prompt injection
+what you would improve with 2 more weeks
+where AI tools helped and what you manually validated
+Evaluation Criteria
+We will evaluate submissions across:
+frontend quality and UX
+architecture quality and clarity of explanation
+backend design and data modeling
+security and safe agent behavior
+reliability, freshness, and provenance
+scalability and performance judgment
+tests, docs, and delivery quality
+Bonus
+Bonus points for thoughtful additions that fit the product, for example:
+shipment delay or arrival reminders by email
+source-health dashboard
+analyst timeline of what changed and why
+side-by-side comparison of multiple shipments
+geospatial querying with PostGIS
+Depth is better than breadth. One well-executed bonus feature is better than several unfinished ones.
+
+Challenge Resource Pack
+This pack is meant to help an engineer rebuild a corridor-focused maritime tracking and intelligence system without giving away the full implementation.
+Included Resources
+tests/fixtures/challenge_resource_pack.json
+synthetic shipment records
+synthetic live vessel positions
+synthetic vessel history points and events
+malformed and stale payload examples
+tests/fixtures/challenge_live_stack_snapshot.json
+non-sensitive snapshot of the running Docker stack
+real API and DB sample shapes
+real observed failure modes from the local environment
+tests/fixtures/challenge_malicious_payload.json
+one safe-to-store, safe-to-parse malicious input for defensive testing
+docs/challenge-source-policy-guide.md
+source classification and operational policy
+Intended Use
+Use these resources to test whether a candidate solution can:
+correlate a shipment to a likely vessel
+show current vessel state with provenance
+build a track from history points
+detect stale or malformed upstream data
+handle hostile input safely
+classify data sources consistently
+reason about real operational degradation, not just happy-path fixtures
+What This Pack Intentionally Omits
+exact database schema
+exact repository contracts
+exact matching heuristics
+exact API response shape
+exact refresh cadence
+production source credentials
+Notes On The Live Stack Snapshot
+The live stack snapshot is intentionally limited to non-sensitive fields.
+It is a point-in-time example, not a contract.
+Candidates should treat it as a realistic reference for shapes, statuses, and failure handling rather than something to hardcode against.
+Expected Candidate Behaviors
+raw payloads should be persisted before normalization
+invalid payloads should be rejected or quarantined with a reason
+stale payloads should not silently overwrite fresher data
+hostile strings should be stored as inert text and escaped on output
+source policy should affect automation, health scoring, and fallback behavior
+
+Challenge Source Policy Guide
+This guide defines how a candidate system should classify and handle upstream sources without depending on any one implementation.
+Why This Exists
+Maritime OSINT sources are not interchangeable. A source may be publicly visible but still be fragile, license-limited, or unsuitable as a hidden production dependency.
+Every source should therefore carry explicit policy metadata.
+Required Classification Fields
+Each source should be described with these fields:
+name
+source_class
+automation_safety
+business_safe_default
+role
+health_expectation
+fallback_behavior
+Source Classes
+open_data
+Use for sources with clear reuse terms and low operational ambiguity.
+Typical handling:
+eligible for product use by default
+safe for repeatable automated ingest
+still requires provenance capture and freshness monitoring
+public_api_terms
+Use for sources that are technically reachable and automatable, but governed by publisher terms, quotas, or fragility concerns.
+Typical handling:
+allowed for product use with caution
+must be rate-limited and monitored
+must degrade gracefully when unavailable
+noncommercial_or_license_limited
+Use for sources that are useful for research but not suitable as the default business-safe production path.
+Typical handling:
+optional enrichment only
+do not make them mandatory for core product workflows
+surface licensing caveats clearly
+analyst_reference_only
+Use for sources that should remain human-in-the-loop unless separately validated.
+Typical handling:
+support analyst workflows
+avoid silent machine dependency
+require explicit manual review or later policy promotion
+Automation Safety Levels
+Use one of these labels:
+high: stable enough for normal automation
+moderate: usable but needs cautious retry and health monitoring
+fragile_scraper: parser drift likely; failures should not be silent
+validation_required: do not trust for unattended automation yet
+human_in_loop: keep as analyst-facing reference only
+Operational Rules
+Persist raw payloads before normalization.
+Record capture time, source identity, and fetch method.
+Never let stale data silently overwrite fresher trusted state.
+A parser failure should degrade source health, not disappear.
+A licensing-sensitive source should not become a hidden production requirement.
+UI and API layers should expose evidence provenance and freshness.
+Example Source Policies
+AISstream
+source_class: public_api_terms
+automation_safety: moderate
+business_safe_default: yes, with caution
+role: live movement bootstrap
+health_expectation: best-effort, occasionally degraded
+fallback_behavior: keep last known position and lower freshness confidence
+Carrier Schedule Pages
+source_class: public_api_terms
+automation_safety: fragile_scraper
+business_safe_default: yes, if monitored
+role: route intent and service context
+health_expectation: parser break risk
+fallback_behavior: retain last trusted schedule snapshot and mark route claims stale
+Lagos Port Corroboration Pages
+source_class: analyst_reference_only initially
+automation_safety: validation_required
+business_safe_default: manual_first
+role: arrival and berth corroboration
+health_expectation: useful but structurally fragile
+fallback_behavior: require analyst confirmation until reliability is proven
+Official Sanctions Lists
+source_class: open_data or public_api_terms
+automation_safety: high
+business_safe_default: yes
+role: compliance and watchlist enrichment
+health_expectation: scheduled official updates
+fallback_behavior: show last refresh date and coverage gap clearly
+Review Questions For Candidates
+Can the system explain why a source is or is not trusted for automation?
+Can it degrade gracefully when a source is stale, malformed, or unavailable?
+Can it keep licensing and product-safety concerns separate from technical reachability?
+
+{
+ "id": "malicious-safe-handling-001",
+ "source": "untrusted_manual_import",
+ "received_at": "2026-03-24T12:15:00Z",
+ "payload": {
+   "shipment_id": "ship-evil-001",
+   "booking_ref": "X' OR '1'='1",
+   "vessel_name": "<script>alert('xss')</script> GREAT ABIDJAN",
+   "imo": "9935040",
+   "mmsi": "357123000",
+   "notes": "../../etc/passwd",
+   "destination_text": "LAGOS\u0000PTML",
+   "evidence_url": "javascript:alert('xss')",
+   "raw_html_fragment": "<img src=x onerror=alert('xss')>"
+ },
+ "expected_handling": [
+   "treat every field as untrusted text input",
+   "store the raw payload without executing or dereferencing embedded content",
+   "escape HTML when rendering in any UI",
+   "reject unsafe URL schemes for outbound links",
+   "strip or neutralize control characters before display or export",
+   "use parameterized database writes only"
+ ]
+}
+
+
+
+{
+ "captured_on": "2026-03-24",
+ "purpose": "Challenge-safe snapshot from the local Docker stack with non-sensitive operational examples.",
+ "containers": [
+   {
+     "name": "ocean-osint-live-watcher-1",
+     "image": "ocean-osint-live-watcher",
+     "status": "Up 4 minutes",
+     "ports": "8000/tcp"
+   },
+   {
+     "name": "ocean-osint-app-1",
+     "image": "ocean-osint-app",
+     "status": "Up 4 minutes",
+     "ports": "0.0.0.0:8001->8000/tcp"
+   },
+   {
+     "name": "ocean-osint-db-1",
+     "image": "postgis/postgis:16-3.4",
+     "status": "Up 4 minutes (healthy)",
+     "ports": "0.0.0.0:5432->5432/tcp"
+   }
+ ],
+ "api_samples": {
+   "health": {
+     "status": "ok",
+     "database": "ocean_osint",
+     "host": "db"
+   },
+   "meta": {
+     "schema_path": "/app/src/ocean_osint/storage/schema.sql"
+   },
+   "readiness_grimaldi": {
+     "source": "grimaldi",
+     "schedule_vessel_count": 7,
+     "recent_live_position_count": 1284,
+     "matched_vessel_count": 6,
+     "unmatched_vessel_count": 1,
+     "source_health": {
+       "source": "grimaldi",
+       "source_class": "public_api_terms",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-24T11:06:09.497226Z",
+       "stale_after_seconds": 604800,
+       "parser_version": "1",
+       "degraded_reason": null,
+       "updated_at": "2026-03-24T11:06:11.469708Z"
+     },
+     "aisstream_health": {
+       "source": "aisstream",
+       "source_class": "public_api_terms",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-22T18:34:07.466866Z",
+       "stale_after_seconds": 3600,
+       "parser_version": "2",
+       "degraded_reason": null,
+       "updated_at": "2026-03-22T18:34:07.470950Z"
+     },
+     "orbcomm_health": {
+       "source": "orbcomm",
+       "source_class": "noncommercial_or_license_limited",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-22T16:32:37.986078Z",
+       "stale_after_seconds": 7200,
+       "parser_version": "1",
+       "degraded_reason": null,
+       "updated_at": "2026-03-22T16:32:30.924291Z"
+     },
+     "blockers": []
+   }
+ },
+ "database_shapes": {
+   "ais_position": [
+     "id",
+     "source",
+     "observed_at",
+     "vessel_imo",
+     "vessel_mmsi",
+     "vessel_name",
+     "latitude",
+     "longitude",
+     "geom",
+     "speed_knots",
+     "course_degrees",
+     "heading_degrees",
+     "nav_status",
+     "destination_text",
+     "raw_id"
+   ],
+   "claim": [
+     "id",
+     "claim_type",
+     "subject_type",
+     "subject_ref",
+     "confidence",
+     "source",
+     "observed_at",
+     "details"
+   ],
+   "tracking_case": [
+     "case_id",
+     "title",
+     "tracked_service_code",
+     "tracked_voyage_reference",
+     "tracked_imo",
+     "tracked_mmsi",
+     "status",
+     "notes",
+     "created_at",
+     "updated_at"
+   ],
+   "voyage_signal": [
+     "id",
+     "source",
+     "observed_at",
+     "vessel_imo",
+     "vessel_mmsi",
+     "service_code",
+     "destination_text",
+     "eta",
+     "status",
+     "metadata",
+     "raw_id"
+   ],
+   "watcher_status": [
+     "source",
+     "round_number",
+     "refresh_schedule",
+     "total_scheduled_vessels",
+     "known_identity_targets",
+     "matched_live_positions",
+     "capture_inspected_messages",
+     "capture_errors",
+     "updated_at"
+   ]
+ },
+ "database_samples": {
+   "tracking_cases": [
+     {
+       "case_id": "case-grimaldi-lagos-demo",
+       "title": "GREAT ABIDJAN",
+       "tracked_service_code": "GRIMALDI_WEST_AFRICA",
+       "tracked_voyage_reference": "GRIMALDI-LAGOS-DEMO",
+       "tracked_imo": "9935040",
+       "tracked_mmsi": "357123000",
+       "status": "open",
+       "updated_at": "2026-03-20T11:49:15.974601+00:00"
+     }
+   ],
+   "recent_ais_positions": [
+     {
+       "observed_at": "2026-03-24T11:09:27.626834+00:00",
+       "vessel_imo": null,
+       "vessel_mmsi": "352003773",
+       "vessel_name": "OCEAN BREEZE",
+       "latitude": 50.710555,
+       "longitude": 1.3576983333333332,
+       "speed_knots": 17.3,
+       "course_degrees": 43.4,
+       "source": "aisstream"
+     },
+     {
+       "observed_at": "2026-03-22T18:33:27.677764+00:00",
+       "vessel_imo": null,
+       "vessel_mmsi": "247452100",
+       "vessel_name": "GREAT COTONOU",
+       "latitude": 51.32349166666667,
+       "longitude": 2.1502399999999997,
+       "speed_knots": 10.5,
+       "course_degrees": 115.7,
+       "source": "aisstream"
+     },
+     {
+       "observed_at": "2026-03-22T18:33:10.869053+00:00",
+       "vessel_imo": null,
+       "vessel_mmsi": "247451600",
+       "vessel_name": "GREAT LAGOS",
+       "latitude": 50.33194,
+       "longitude": -0.06318166666666666,
+       "speed_knots": 14.6,
+       "course_degrees": 70.3,
+       "source": "aisstream"
+     }
+   ],
+   "recent_voyage_signals": [
+     {
+       "source": "sallaum",
+       "observed_at": "2026-03-24T11:10:12.64339+00:00",
+       "vessel_imo": null,
+       "vessel_mmsi": null,
+       "service_code": "SALLAUM_US_WEST_AFRICA",
+       "destination_text": "Lagos",
+       "eta": "2026-04-22T00:00:00+00:00",
+       "status": "scheduled"
+     },
+     {
+       "source": "sallaum",
+       "observed_at": "2026-03-24T11:10:12.64339+00:00",
+       "vessel_imo": null,
+       "vessel_mmsi": null,
+       "service_code": "SALLAUM_US_WEST_AFRICA",
+       "destination_text": "Lagos",
+       "eta": "2026-04-26T00:00:00+00:00",
+       "status": "scheduled"
+     }
+   ],
+   "source_health_rows": [
+     {
+       "source": "aisstream",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-22T18:34:07Z"
+     },
+     {
+       "source": "global_fishing_watch",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-24T11:06:14Z"
+     },
+     {
+       "source": "grimaldi",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-24T11:06:09Z"
+     },
+     {
+       "source": "nigerian_ports",
+       "source_status": "manual",
+       "last_success_at": "2026-03-20T11:55:43Z"
+     },
+     {
+       "source": "official_sanctions",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-20T11:56:01Z"
+     },
+     {
+       "source": "orbcomm",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-22T16:32:37Z"
+     },
+     {
+       "source": "sallaum",
+       "source_status": "healthy",
+       "last_success_at": "2026-03-24T11:10:12Z"
+     }
+   ],
+   "watcher_status_rows": [
+     {
+       "source": "grimaldi",
+       "round_number": 29,
+       "total_scheduled_vessels": 7,
+       "matched_live_positions": 7,
+       "capture_inspected_messages": 5000
+     },
+     {
+       "source": "sallaum",
+       "round_number": 29,
+       "total_scheduled_vessels": 7,
+       "matched_live_positions": 7,
+       "capture_inspected_messages": 5000
+     }
+   ]
+ },
+ "real_failure_examples": [
+   {
+     "kind": "api_error",
+     "endpoint": "/source-health",
+     "observed_response": {
+       "status_code": 500,
+       "body": "Internal Server Error"
+     }
+   },
+   {
+     "kind": "watcher_round_failure",
+     "component": "live-watcher",
+     "observed_error_class": "psycopg.errors.AmbiguousParameter",
+     "observed_effect": "watcher_status showed zero scheduled vessels and zero matched live positions for the failed round",
+     "example_message_excerpt": "could not determine data type of parameter $2"
+   },
+   {
+     "kind": "upstream_connectivity_failure",
+     "component": "live-watcher",
+     "example_messages": [
+       "AISstream targeted capture failed: [Errno -3] Temporary failure in name resolution",
+       "AISstream schedule capture failed: timed out during opening handshake",
+       "ORBCOMM call budget exhausted for the last hour (10/10); try again later."
+     ]
+   }
+ ]
+}
+
+
+
+{
+ "shipments": [
+   {
+     "shipment_id": "ship-001",
+     "booking_ref": "SAL-LAG-24001",
+     "carrier": "sallaum",
+     "service_lane": "US -> West Africa -> Lagos",
+     "load_port": "USBAL",
+     "discharge_port": "NGLOS",
+     "cargo_type": "ro-ro vehicles",
+     "units": 42,
+     "declared_departure_date": "2026-03-18",
+     "declared_eta_date": "2026-04-02",
+     "candidate_vessels": [
+       {
+         "name": "GREAT ABIDJAN",
+         "imo": "9935040",
+         "mmsi": "357123000"
+       }
+     ],
+     "evidence": [
+       {
+         "source": "carrier_schedule",
+         "captured_at": "2026-03-18T08:12:00Z",
+         "claim": "Lagos discharge expected early April"
+       }
+     ]
+   },
+   {
+     "shipment_id": "ship-002",
+     "booking_ref": "GRI-LAG-24007",
+     "carrier": "grimaldi",
+     "service_lane": "US -> West Africa -> Lagos",
+     "load_port": "USSAV",
+     "discharge_port": "NGAPP",
+     "cargo_type": "rolling equipment",
+     "units": 11,
+     "declared_departure_date": "2026-03-16",
+     "declared_eta_date": "2026-03-31",
+     "candidate_vessels": [
+       {
+         "name": "GREAT COTONOU",
+         "imo": "9922345",
+         "mmsi": "311000111"
+       },
+       {
+         "name": "GREAT TEMA",
+         "imo": "9919876",
+         "mmsi": "311000222"
+       }
+     ],
+     "evidence": [
+       {
+         "source": "carrier_fleet_context",
+         "captured_at": "2026-03-17T10:05:00Z",
+         "claim": "Service rotation may swap hulls late in voyage planning"
+       }
+     ]
+   }
+ ],
+ "vessel_positions": [
+   {
+     "source": "aisstream",
+     "observed_at": "2026-03-20T12:00:00Z",
+     "mmsi": "357123000",
+     "imo": "9935040",
+     "vessel_name": "GREAT ABIDJAN",
+     "latitude": 5.25,
+     "longitude": 3.85,
+     "sog_knots": 14.2,
+     "cog_degrees": 92.5,
+     "heading_degrees": 91,
+     "navigation_status": "under_way_using_engine",
+     "destination_text": "LAGOS"
+   },
+   {
+     "source": "orbcomm",
+     "observed_at": "2026-03-20T12:06:00Z",
+     "mmsi": "311000111",
+     "imo": "9922345",
+     "vessel_name": "GREAT COTONOU",
+     "latitude": 4.91,
+     "longitude": 2.44,
+     "sog_knots": 12.8,
+     "cog_degrees": 87.0,
+     "heading_degrees": 88,
+     "navigation_status": "under_way_using_engine",
+     "destination_text": "TIN CAN"
+   }
+ ],
+ "vessel_history": [
+   {
+     "mmsi": "357123000",
+     "imo": "9935040",
+     "vessel_name": "GREAT ABIDJAN",
+     "points": [
+       {
+         "observed_at": "2026-03-19T00:00:00Z",
+         "latitude": 4.10,
+         "longitude": -8.90,
+         "sog_knots": 15.1,
+         "source": "historical_ais"
+       },
+       {
+         "observed_at": "2026-03-19T12:00:00Z",
+         "latitude": 4.62,
+         "longitude": -2.10,
+         "sog_knots": 14.7,
+         "source": "historical_ais"
+       },
+       {
+         "observed_at": "2026-03-20T00:00:00Z",
+         "latitude": 4.97,
+         "longitude": 1.30,
+         "sog_knots": 14.4,
+         "source": "historical_ais"
+       },
+       {
+         "observed_at": "2026-03-20T12:00:00Z",
+         "latitude": 5.25,
+         "longitude": 3.85,
+         "sog_knots": 14.2,
+         "source": "aisstream"
+       }
+     ],
+     "events": [
+       {
+         "event_type": "schedule_eta_recorded",
+         "event_at": "2026-03-18T08:12:00Z",
+         "details": "Carrier schedule declared 2026-04-02 Lagos ETA"
+       },
+       {
+         "event_type": "lagos_expected_detected",
+         "event_at": "2026-03-20T12:00:00Z",
+         "details": "Destination text set to LAGOS"
+       }
+     ]
+   }
+ ],
+ "malformed_and_stale_payloads": [
+   {
+     "id": "stale-live-position-001",
+     "kind": "stale",
+     "source": "aisstream",
+     "received_at": "2026-03-24T12:00:00Z",
+     "payload": {
+       "MetaData": {
+         "MMSI": 357123000,
+         "ShipName": "GREAT ABIDJAN",
+         "time_utc": "2026-03-11T09:00:00Z"
+       },
+       "Message": {
+         "PositionReport": {
+           "Latitude": 5.25,
+           "Longitude": 3.85,
+           "Sog": 14.2,
+           "Cog": 92.5,
+           "TrueHeading": 91
+         }
+       }
+     },
+     "expected_handling": [
+       "mark payload stale relative to ingest time",
+       "do not replace a newer live position",
+       "surface source freshness warning"
+     ]
+   },
+   {
+     "id": "malformed-position-001",
+     "kind": "malformed",
+     "source": "aisstream",
+     "received_at": "2026-03-24T12:05:00Z",
+     "payload": {
+       "MetaData": {
+         "MMSI": "unknown",
+         "ShipName": "GREAT ABIDJAN",
+         "time_utc": "not-a-timestamp"
+       },
+       "Message": {
+         "PositionReport": {
+           "Latitude": 190.5,
+           "Longitude": "east",
+           "Sog": -4,
+           "Cog": 999
+         }
+       }
+     },
+     "expected_handling": [
+       "reject or quarantine as invalid payload",
+       "record validation reasons",
+       "avoid partial normalization into trusted state"
+     ]
+   },
+   {
+     "id": "malformed-schedule-001",
+     "kind": "malformed",
+     "source": "carrier_schedule",
+     "received_at": "2026-03-24T12:10:00Z",
+     "payload": {
+       "carrier": "sallaum",
+       "service_name": "",
+       "voyage_code": null,
+       "calls": [
+         {
+           "port_name": "Lagos",
+           "eta": "2026-02-30",
+           "etd": ""
+         },
+         {
+           "port_name": 404,
+           "eta": "2026-03-28T12:00:00Z"
+         }
+       ]
+     },
+     "expected_handling": [
+       "detect invalid dates and missing required fields",
+       "avoid promoting route claims to high-confidence schedule evidence",
+       "degrade schedule-source health if repeated"
+     ]
+   }
+ ]
+}
+
+
+

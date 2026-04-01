@@ -1,0 +1,5 @@
+{
+  "clearance_checklists": [
+    { "shipment_id": "ship-001", "form_m_approved": true, "bl_received": true, "paar_submitted_at": "2026-03-27T10:00:00Z", "paar_issued_at": null, "customs_duty_paid": false, "trucking_booked": false, "notes": "Scenario forces an incomplete clearance state close to arrival." }
+  ]
+}

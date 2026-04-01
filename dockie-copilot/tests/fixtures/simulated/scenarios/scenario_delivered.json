@@ -1,0 +1,8 @@
+{
+  "shipment_updates": [
+    { "shipment_id": "ship-010", "status": "delivered" }
+  ],
+  "knowledge_docs": [
+    { "source_name": "scenario_delivered", "source_type": "scenario_note", "shipment_id": "ship-010", "title": "Delivered note", "content": "Shipment ship-010 has cleared the operational workflow and can be treated as complete.", "metadata": { "scenario": "delivered" } }
+  ]
+}

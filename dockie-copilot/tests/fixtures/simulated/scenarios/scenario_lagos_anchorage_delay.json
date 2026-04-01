@@ -1,0 +1,8 @@
+{
+  "port_congestion_readings": [
+    { "port_locode": "NGLOS", "delay_days": 4.5, "queue_vessels": 22, "source": "scenario_lagos_anchorage_delay", "detail": "Anchorage delay has worsened sharply.", "observed_at": "2026-03-30T08:30:00Z" }
+  ],
+  "port_observations": [
+    { "port_locode": "NGLOS", "terminal_name": "Tin Can Island", "vessel_name": "GREAT LUANDA", "vessel_imo": "9953303", "vessel_mmsi": "357555444", "status": "at_anchor", "event_type": "extended_wait", "detail": "Anchorage wait has exceeded the normal window and berth assignment is still pending.", "source": "scenario_lagos_anchorage_delay", "observed_at": "2026-03-30T08:30:00Z" }
+  ]
+}

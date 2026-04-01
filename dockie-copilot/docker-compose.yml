@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  db:
+    image: ankane/pgvector:latest
+    container_name: dockie-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dockie_copilot}
+      POSTGRES_USER: ${POSTGRES_USER:-dockie}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dockie_secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    command: >
+      bash -c "docker-entrypoint.sh postgres &\n      sleep 5 &&\n      psql -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot} -c 'CREATE EXTENSION IF NOT EXISTS postgis;' &&\n      psql -U ${POSTGRES_USER:-dockie} -d ${POSTGRES_DB:-dockie_copilot} -c 'CREATE EXTENSION IF NOT EXISTS vector;' &&\n      wait"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: dockie-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
+      SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./tests/fixtures:/app/tests/fixtures:ro
+    command: >
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  standby-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: dockie-standby-worker
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
+      SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-dockie}:${POSTGRES_PASSWORD:-dockie_secret}@db:5432/${POSTGRES_DB:-dockie_copilot}
+    volumes:
+      - ./tests/fixtures:/app/tests/fixtures:ro
+    command: >
+      sh -c "alembic upgrade head && python -m app.cli.commands standby_worker"
+
+volumes:
+  postgres_data:

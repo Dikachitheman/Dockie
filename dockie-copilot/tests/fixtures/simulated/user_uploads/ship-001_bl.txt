@@ -1,0 +1,5 @@
+Bill of Lading summary for ship-001.
+Carrier: Sallaum
+Booking reference: SAL-LAG-24001
+Free days reference in this fake upload: 5 days from discharge.
+Customer instruction: notify broker when berth window tightens.

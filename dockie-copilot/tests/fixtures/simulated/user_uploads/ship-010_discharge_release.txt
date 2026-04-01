@@ -1,0 +1,2 @@
+Discharge release note for ship-010.
+Shipment workflow is complete and documents indicate post-delivery closure.

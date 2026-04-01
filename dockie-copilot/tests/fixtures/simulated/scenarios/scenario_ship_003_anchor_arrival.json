@@ -1,0 +1,32 @@
+{
+  "positions": [
+    {
+      "source": "scenario_ship_003_anchor_arrival",
+      "observed_at": "2026-03-30T09:10:00Z",
+      "mmsi": "357456100",
+      "imo": "9941101",
+      "vessel_name": "GREAT LAGOS",
+      "latitude": 6.42,
+      "longitude": 3.29,
+      "sog_knots": 0.2,
+      "cog_degrees": 15.0,
+      "heading_degrees": 12,
+      "navigation_status": "at_anchor",
+      "destination_text": "APAPA"
+    }
+  ],
+  "port_observations": [
+    {
+      "port_locode": "NGAPP",
+      "terminal_name": "Apapa Anchorage",
+      "vessel_name": "GREAT LAGOS",
+      "vessel_imo": "9941101",
+      "vessel_mmsi": "357456100",
+      "status": "at_anchor",
+      "event_type": "anchor_arrival",
+      "detail": "Shipment vessel has reached anchorage and is waiting for berth assignment.",
+      "source": "scenario_ship_003_anchor_arrival",
+      "observed_at": "2026-03-30T09:10:00Z"
+    }
+  ]
+}

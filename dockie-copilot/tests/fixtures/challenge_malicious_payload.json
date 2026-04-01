@@ -1,0 +1,24 @@
+{
+  "id": "malicious-safe-handling-001",
+  "source": "untrusted_manual_import",
+  "received_at": "2026-03-24T12:15:00Z",
+  "payload": {
+    "shipment_id": "ship-evil-001",
+    "booking_ref": "X' OR '1'='1",
+    "vessel_name": "<script>alert('xss')</script> GREAT ABIDJAN",
+    "imo": "9935040",
+    "mmsi": "357123000",
+    "notes": "../../etc/passwd",
+    "destination_text": "LAGOS\u0000PTML",
+    "evidence_url": "javascript:alert('xss')",
+    "raw_html_fragment": "<img src=x onerror=alert('xss')>"
+  },
+  "expected_handling": [
+    "treat every field as untrusted text input",
+    "store the raw payload without executing or dereferencing embedded content",
+    "escape HTML when rendering in any UI",
+    "reject unsafe URL schemes for outbound links",
+    "strip or neutralize control characters before display or export",
+    "use parameterized database writes only"
+  ]
+}

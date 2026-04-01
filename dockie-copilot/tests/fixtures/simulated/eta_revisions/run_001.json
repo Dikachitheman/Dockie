@@ -1,0 +1,7 @@
+{
+  "revisions": [
+    { "shipment_id": "ship-001", "carrier": "sallaum", "revision_at": "2026-03-29T14:00:00Z", "previous_eta": "2026-04-01T00:00:00Z", "new_eta": "2026-04-02T00:00:00Z", "source": "simulated_schedule_refresh" },
+    { "shipment_id": "ship-002", "carrier": "grimaldi", "revision_at": "2026-03-29T12:40:00Z", "previous_eta": "2026-04-01T00:00:00Z", "new_eta": "2026-04-03T00:00:00Z", "source": "simulated_schedule_refresh" },
+    { "shipment_id": "ship-005", "carrier": "sallaum", "revision_at": "2026-03-29T16:30:00Z", "previous_eta": "2026-03-29T00:00:00Z", "new_eta": "2026-03-30T00:00:00Z", "source": "simulated_schedule_refresh" }
+  ]
+}

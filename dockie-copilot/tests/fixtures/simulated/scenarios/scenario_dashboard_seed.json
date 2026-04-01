@@ -1,0 +1,44 @@
+{
+  "shipment_updates": [
+    { "shipment_id": "ship-001", "status": "in_transit" },
+    { "shipment_id": "ship-002", "status": "in_transit" },
+    { "shipment_id": "ship-004", "status": "in_transit" },
+    { "shipment_id": "ship-005", "status": "in_transit" },
+    { "shipment_id": "ship-007", "status": "in_transit" }
+  ],
+  "eta_revisions": [
+    { "shipment_id": "ship-001", "carrier": "sallaum",  "revision_at": "2026-03-28T10:00:00Z", "previous_eta": "2026-03-31T00:00:00Z", "new_eta": "2026-04-01T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-001", "carrier": "sallaum",  "revision_at": "2026-03-30T14:00:00Z", "previous_eta": "2026-04-01T00:00:00Z", "new_eta": "2026-04-02T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-002", "carrier": "grimaldi", "revision_at": "2026-03-27T09:00:00Z", "previous_eta": "2026-04-01T00:00:00Z", "new_eta": "2026-04-03T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-002", "carrier": "grimaldi", "revision_at": "2026-03-30T08:10:00Z", "previous_eta": "2026-04-03T00:00:00Z", "new_eta": "2026-04-05T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-004", "carrier": "grimaldi", "revision_at": "2026-03-29T11:30:00Z", "previous_eta": "2026-04-07T00:00:00Z", "new_eta": "2026-04-09T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-005", "carrier": "sallaum",  "revision_at": "2026-03-29T16:30:00Z", "previous_eta": "2026-03-29T00:00:00Z", "new_eta": "2026-03-30T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-005", "carrier": "sallaum",  "revision_at": "2026-03-31T08:00:00Z", "previous_eta": "2026-03-30T00:00:00Z", "new_eta": "2026-04-01T00:00:00Z", "source": "scenario_dashboard_seed" },
+    { "shipment_id": "ship-007", "carrier": "sallaum",  "revision_at": "2026-03-30T17:00:00Z", "previous_eta": "2026-04-04T00:00:00Z", "new_eta": "2026-04-06T00:00:00Z", "source": "scenario_dashboard_seed" }
+  ],
+  "clearance_checklists": [
+    { "shipment_id": "ship-001", "form_m_approved": true,  "bl_received": true,  "paar_submitted_at": "2026-03-27T10:00:00Z", "paar_issued_at": null,                 "customs_duty_paid": false, "trucking_booked": false, "notes": "PAAR pending — customs duty and trucking not yet actioned." },
+    { "shipment_id": "ship-002", "form_m_approved": true,  "bl_received": true,  "paar_submitted_at": "2026-03-25T09:15:00Z", "paar_issued_at": "2026-03-30T09:15:00Z", "customs_duty_paid": true,  "trucking_booked": true,  "notes": "Fully cleared and berth-ready." },
+    { "shipment_id": "ship-004", "form_m_approved": true,  "bl_received": true,  "paar_submitted_at": "2026-03-26T08:00:00Z", "paar_issued_at": null,                 "customs_duty_paid": false, "trucking_booked": false, "notes": "PAAR submitted but not issued; duty and trucking pending ETA confirmation." },
+    { "shipment_id": "ship-005", "form_m_approved": true,  "bl_received": true,  "paar_submitted_at": "2026-03-24T08:00:00Z", "paar_issued_at": "2026-03-28T17:30:00Z", "customs_duty_paid": true,  "trucking_booked": true,  "notes": "Berth-ready. ETA slip is the only remaining risk." },
+    { "shipment_id": "ship-006", "form_m_approved": false, "bl_received": false, "paar_submitted_at": null,                  "paar_issued_at": null,                 "customs_duty_paid": false, "trucking_booked": false, "notes": "Documents not started — vessel pre-departure." },
+    { "shipment_id": "ship-007", "form_m_approved": true,  "bl_received": true,  "paar_submitted_at": "2026-03-20T11:00:00Z", "paar_issued_at": "2026-03-30T10:00:00Z", "customs_duty_paid": true,  "trucking_booked": true,  "notes": "Operationally calm. ETA revision is the watchpoint." },
+    { "shipment_id": "ship-008", "form_m_approved": false, "bl_received": false, "paar_submitted_at": null,                  "paar_issued_at": null,                 "customs_duty_paid": false, "trucking_booked": false, "notes": "Pre-departure. No documents started yet." },
+    { "shipment_id": "ship-009", "form_m_approved": true,  "bl_received": true,  "paar_submitted_at": "2026-03-28T09:00:00Z", "paar_issued_at": null,                 "customs_duty_paid": false, "trucking_booked": false, "notes": "Abidjan corridor. PAAR process running ahead of schedule." },
+    { "shipment_id": "ship-010", "form_m_approved": false, "bl_received": true,  "paar_submitted_at": null,                  "paar_issued_at": null,                 "customs_duty_paid": false, "trucking_booked": false, "notes": "Dakar destination. BL received but Form M not yet approved." }
+  ],
+  "port_congestion_readings": [
+    { "port_locode": "NGLOS", "delay_days": 3.5, "queue_vessels": 14, "source": "scenario_dashboard_seed", "detail": "Congestion elevated — berth queue building ahead of the Easter break.", "observed_at": "2026-04-01T07:00:00Z" },
+    { "port_locode": "NGAPP", "delay_days": 2.0, "queue_vessels": 9,  "source": "scenario_dashboard_seed", "detail": "Apapa moderate — two berths occupied, third opening in 48 hours.", "observed_at": "2026-04-01T07:00:00Z" },
+    { "port_locode": "GHTEM", "delay_days": 1.5, "queue_vessels": 5,  "source": "scenario_dashboard_seed", "detail": "Tema operating close to plan.", "observed_at": "2026-04-01T07:00:00Z" },
+    { "port_locode": "GHTKD", "delay_days": 1.0, "queue_vessels": 3,  "source": "scenario_dashboard_seed", "detail": "Takoradi low congestion.", "observed_at": "2026-04-01T07:00:00Z" }
+  ],
+  "knowledge_docs": [
+    {
+      "source_name": "scenarios/dashboard_seed_note",
+      "source_type": "scenario_note",
+      "title": "Dashboard seed applied",
+      "content": "Scenario dashboard_seed applied on 2026-04-01. ETA revisions added for ship-001 through ship-007. Clearance checklists upserted for all active shipments. Port congestion readings refreshed for NGLOS, NGAPP, GHTEM, and GHTKD. This scenario is intended to populate the analytics dashboard with realistic operational state."
+    }
+  ]
+}

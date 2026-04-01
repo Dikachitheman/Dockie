@@ -1,0 +1,8 @@
+{
+  "shipment_updates": [
+    { "shipment_id": "ship-002", "status": "delayed", "declared_eta_date": "2026-04-05T00:00:00Z" }
+  ],
+  "eta_revisions": [
+    { "shipment_id": "ship-002", "carrier": "grimaldi", "revision_at": "2026-03-30T08:10:00Z", "previous_eta": "2026-04-03T00:00:00Z", "new_eta": "2026-04-05T00:00:00Z", "source": "scenario_eta_slip" }
+  ]
+}

@@ -1,0 +1,3 @@
+Invoice summary for ship-005.
+Cargo profile: SUVs.
+Operational note: customer expects quick release after berth.

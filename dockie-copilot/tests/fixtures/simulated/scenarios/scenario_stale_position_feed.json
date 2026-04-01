@@ -1,0 +1,5 @@
+{
+  "knowledge_docs": [
+    { "source_name": "scenario_stale_position_feed", "source_type": "scenario_note", "shipment_id": "ship-007", "title": "Stale feed note", "content": "The simulated position feed for ship-007 has not refreshed within the expected window. Treat ETA confidence as reduced.", "metadata": { "scenario": "stale_position_feed" } }
+  ]
+}

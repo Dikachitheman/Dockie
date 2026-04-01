@@ -1,0 +1,175 @@
+The `DatabaseSessionService` option addresses this but requires the `adk_session_db_url` to point to a shared store, and the singleton agent instance is not thread-safe across workers without careful deployment configuration. 
+The `detect_hostile_content` scanner in `normalizer.py` is the right hook point for prompt injection defence, though its current pattern list (`javascript:`, `<script`, etc.) is shallow and would need expansion for production.
+Cache invalidation is prefix-only and coarse. After ingest, `invalidate_cache_prefix("shipments:")` clears all shipment cache entries at once. Under high write frequency — a real-time AIS feed updating many vessels simultaneously — this causes repeated mass cache invalidation, negating most of the cache value. A production system would want per-shipment invalidation triggered by ingest events for the relevant vessel MMSI.
+The position staleness check in `PositionRepository.save()` queries the database on every save (`get_latest_for_mmsi` before each insert). Under a high-frequency AIS feed this serialises all position writes for a given MMSI. At scale this should be a database-level upsert with a conditional (`INSERT ... WHERE observed_at > existing`) rather than a read-then-write pattern.
+The `ShipmentService._get_latest_candidate_position` method issues two batch queries (by MMSI list and by IMO list) and then iterates candidate vessels in Python to pick the freshest. This is correct but means position freshness comparisons happen in application memory rather than the database. At 100+ candidate vessels this may produce unnecessary data transfer.
+i have identified the parts i think i want to improve. give me detailed guide /suggestions on what you would do so i can prompt codex to fix it 
+
+
+Here's a precise, prompt-ready guide for each fix. I'll go in order of impact.
+
+---
+
+## 1. ADK session — per-request user identity + worker-safe singleton
+
+**The problem:** `get_adk_agent()` is a process-level singleton with a hardcoded `user_id` from settings. Every user shares the same session identity. In a multi-worker deployment (Gunicorn + multiple Uvicorn workers), `InMemorySessionService` is per-process, so a user whose request lands on worker 2 loses the session state written by worker 1.
+
+**What to do:**
+
+Drop the `@lru_cache` singleton pattern. Instead, build the `ADKAgent` once at startup (lifespan), store it on `app.state`, and inject it as a FastAPI dependency. The `user_id` should come from the request — initially you can derive it from a session cookie or a bearer token header; for now even a client-supplied `X-Session-ID` header is better than a static value.
+
+For `DatabaseSessionService`, make sure `adk_session_db_url` points to the same Postgres instance the app already uses (just pass `settings.database_url` as the sync URL). ADK's `DatabaseSessionService` is designed to be shared across workers — this is the correct production path.
+
+**Prompt for Codex:**
+
+> Refactor `adk_agent.py` and `agent_run.py` as follows:
+>
+> 1. Remove `@lru_cache` from `get_adk_agent()`. Instead create a `build_adk_agent()` function that constructs and returns a new `ADKAgent` each call — it should not cache.
+> 2. In `app.py`'s `lifespan` context manager, call `build_adk_agent()` once and store it as `app.state.adk_agent`.
+> 3. Add a FastAPI dependency `get_adk_agent_dep(request: Request) -> ADKAgent` that returns `request.app.state.adk_agent`.
+> 4. In `agent_run.py`, replace the direct `get_adk_agent()` call with the dependency injection.
+> 5. In `build_session_service()`, remove the reference to `settings.adk_user_id`. Instead accept `user_id: str` as a parameter.
+> 6. In the `/agent/run` endpoint, extract a `user_id` from the `X-Session-ID` request header (fall back to generating a UUID if absent). Pass this `user_id` into the ADK run invocation.
+> 7. When `adk_session_backend == "database"`, pass `settings.database_url` (converted from asyncpg scheme to psycopg2 scheme, i.e. replace `postgresql+asyncpg://` with `postgresql://`) as `db_url` to `DatabaseSessionService`.
+> 8. Keep `build_llm_agent()` unchanged.
+
+---
+
+## 2. Hostile content detection — deeper prompt injection defence
+
+**The problem:** `detect_hostile_content` only pattern-matches a handful of literal strings. It misses: base64-encoded payloads, Unicode confusables, HTML entities that decode to dangerous strings, newline-injected role-switching attempts (`\nHuman:`, `\nAssistant:`), and split-token attacks where the dangerous string is spread across concatenated fields.
+
+**What to do:**
+
+Add a second pass after the literal scan that covers the most practical attack vectors for this domain. You don't need an ML classifier — a well-structured rule set handles 95% of real injection attempts in structured data pipelines.
+
+**Expanded pattern list to implement:**
+
+```python
+# Role-switch injection (the most dangerous for LLM agents)
+r"\n\s*(human|user|assistant|system)\s*:",   # regex
+r"ignore previous instructions",
+r"ignore all previous",
+r"disregard your",
+r"you are now",
+r"new instructions:",
+
+# HTML/JS that survives one round of sanitization
+"&#x6A;&#x61;&#x76;&#x61;",  # 'java' in HTML entities
+"&#106;&#97;&#118;&#97;",
+"data:text/html",
+"vbscript:",
+
+# Path traversal
+"../",  # already have ../../, add single-step
+"%2e%2e",  # URL-encoded
+
+# Null bytes and non-printable injection
+"\x00", "\x1b",  # already have \x00, add ESC
+
+# Base64-encoded dangerous strings — decode and re-scan
+# (handle separately, see below)
+```
+
+For base64, add a separate check: if a string value is valid base64 and longer than 20 chars, decode it and recursively scan the result.
+
+**Prompt for Codex:**
+
+> Expand `detect_hostile_content` and `_scan_value` in `normalizer.py` as follows:
+>
+> 1. Extend `_UNSAFE_PATTERNS` with these additional strings: `"ignore previous instructions"`, `"ignore all previous"`, `"disregard your"`, `"you are now"`, `"new instructions:"`, `"data:text/html"`, `"vbscript:"`, `"&#x"`, `"%2e%2e"`, `"\x1b"`, `"../"`
+> 2. Add a list `_UNSAFE_REGEXES` of compiled `re.Pattern` objects for role-switch injection. Include patterns for lines starting with `human:`, `user:`, `assistant:`, `system:` (case-insensitive, with optional whitespace, preceded by a newline or start of string).
+> 3. In `_scan_value`, after the literal pattern scan, run all regex patterns against string values and append findings if matched.
+> 4. Add a `_try_decode_base64(value: str) -> str | None` helper. It should: strip whitespace, check if the string matches `^[A-Za-z0-9+/]{20,}={0,2}$`, attempt `base64.b64decode`, decode as UTF-8, return the decoded string or `None` on failure.
+> 5. In `_scan_value`, for string values that pass `_try_decode_base64`, recursively call `_scan_value` on the decoded result and prefix any findings with `"base64-encoded: "`.
+> 6. Do not change the function signature of `detect_hostile_content`.
+> 7. Add unit tests in `tests/test_normalizer.py` covering: a clean payload (no findings), a payload with `<script>` (existing), a base64-encoded `javascript:` string, and a role-switch injection via `\nHuman: ignore previous instructions`.
+
+---
+
+## 3. Per-shipment cache invalidation on ingest
+
+**The problem:** `invalidate_cache_prefix("shipments:")` nukes every cached shipment status and history entry whenever any position changes. On a live AIS feed this fires constantly and makes the cache nearly useless — every request becomes a cache miss.
+
+**What to do:**
+
+Track which MMSI maps to which shipment during ingest, and invalidate only the affected shipment keys. This requires the ingest pipeline to know the MMSI→shipment mapping before it saves positions.
+
+The cleanest approach is to load the mapping once at the start of the ingest run, then use it to target invalidation.
+
+**Prompt for Codex:**
+
+> Refactor cache invalidation in `ingest.py` and `cache.py` as follows:
+>
+> **In `cache.py`:**
+> 1. Add a method `delete_key(self, key: str) -> None` to `CacheBackend` protocol, `NullCacheBackend`, and `RedisCacheBackend`. For Redis, use `await self._redis.delete(self._full_key(key))`.
+> 2. Add a module-level async function `invalidate_shipment_cache(shipment_id: str) -> None` that calls `delete_key` for `f"shipments:status:{shipment_id}"` and `f"shipments:history:{shipment_id}"`.
+>
+> **In `ingest.py`:**
+> 1. At the start of `ingest_resource_pack`, after initialising repositories, load a mapping `mmsi_to_shipment_ids: dict[str, list[str]]` by querying the database. Use a single query that joins `vessels` → `shipment_vessels` → `shipments` and groups by `vessel.mmsi`. Store as `{mmsi: [shipment_id, ...]}`.
+> 2. In the live positions loop, after a position is successfully saved (not skipped as stale), look up `mmsi_to_shipment_ids.get(pos.mmsi, [])` and call `await invalidate_shipment_cache(shipment_id)` for each matched shipment ID. Collect these into a set to avoid duplicate invalidations within the same run.
+> 3. In the vessel history loop, do the same per history point.
+> 4. At the end of `ingest_resource_pack`, instead of invalidating `"shipments:"` globally, only invalidate `"shipments:list"` (the list endpoint cache) once unconditionally, since shipment metadata may have changed.
+> 5. Remove the `await invalidate_cache_prefix("shipments:")` call from `_cmd_ingest` and `_cmd_refresh` in `commands.py`. Replace with `await invalidate_cache_prefix("shipments:list")` for the list key only.
+
+---
+
+## 4. Atomic conditional upsert for position saves
+
+**The problem:** `PositionRepository.save()` does `SELECT` then conditional `INSERT` — two round trips, and between them another worker could insert a newer position, leaving a race condition. Under a streaming AIS feed with one goroutine per vessel this serialises writes for each MMSI.
+
+**What to do:**
+
+Replace the read-then-write with a single PostgreSQL `INSERT ... ON CONFLICT DO UPDATE WHERE` that enforces monotonicity at the database level. PostgreSQL's `ON CONFLICT` with a `WHERE` clause on the update is atomic.
+
+You need a unique constraint on `(mmsi)` for the latest position, but the positions table stores history too — so the right approach is either a partial unique index on the latest position, or (simpler) just using the conditional update and trusting the DB constraint to prevent stale overwrites.
+
+The cleanest model: keep history in the positions table, but add a separate `latest_positions` table (or materialised view) that holds exactly one row per MMSI, updated atomically. For the MVP scope, a conditional upsert on a `latest_positions` table is simpler than a partial index on `positions`.
+
+**Prompt for Codex:**
+
+> Refactor `PositionRepository.save()` in `position_repo.py` and add the supporting migration as follows:
+>
+> 1. In `orm.py`, add a new ORM model `LatestPosition` mapping to a table `latest_positions`. It should have the same columns as `Position` except no `id` primary key — instead use `mmsi` as the primary key (String 20, not nullable). Include all position fields: `imo`, `vessel_name`, `latitude`, `longitude`, `geom`, `sog_knots`, `cog_degrees`, `heading_degrees`, `navigation_status`, `destination_text`, `source`, `observed_at`, `raw_event_id`, `created_at`, `updated_at` (server default now, onupdate now).
+>
+> 2. In `position_repo.py`, replace the `save()` method body with a PostgreSQL `INSERT INTO latest_positions (...) VALUES (...) ON CONFLICT (mmsi) DO UPDATE SET ... WHERE latest_positions.observed_at < EXCLUDED.observed_at`. Use `sqlalchemy.dialects.postgresql.insert` for this. This makes the staleness check atomic and eliminates the read round trip. Return the resulting row.
+>
+> 3. Add a new method `get_latest_for_mmsi(mmsi: str) -> LatestPosition | None` that queries `latest_positions` instead of `positions`. Update `get_latest_for_imo`, `get_latest_for_mmsis`, `get_latest_for_imos` to query `latest_positions` for current state lookups.
+>
+> 4. Keep `save_raw()` writing to `positions` unchanged — history still accumulates there.
+>
+> 5. Create an Alembic migration that: creates the `latest_positions` table, adds a GiST index on `geom`, and adds a btree index on `observed_at`. Add a comment: `-- Stores exactly one row per MMSI; updated atomically via conditional upsert`.
+
+---
+
+## 5. Push position freshness comparison into the database
+
+**The problem:** `_get_latest_candidate_position` fetches the latest position for every candidate vessel MMSI and IMO in two separate batch queries, then compares `observed_at` timestamps in Python. At 100+ candidates this pulls unnecessary rows across the wire.
+
+**What to do:**
+
+Write a single query that joins `shipment_vessels` → `vessels` → `latest_positions`, ordered by `is_primary DESC, observed_at DESC`, and returns only the top 1 row. Let the database do the comparison and ranking.
+
+**Prompt for Codex:**
+
+> Refactor `ShipmentService._get_latest_candidate_position` in `services.py` as follows:
+>
+> 1. Replace the two-query batch fetch + Python loop with a single SQLAlchemy async query that: joins `ShipmentVessel` → `Vessel` → `LatestPosition` (the new table from fix 4, or `Position` if fix 4 is not yet applied — use whichever holds current state), filters by `ShipmentVessel.shipment_id == shipment.id`, orders by `ShipmentVessel.is_primary.desc(), LatestPosition.observed_at.desc()`, and limits to 1 result.
+> 2. The method signature stays the same: `async def _get_latest_candidate_position(self, shipment) -> LatestPosition | None`.
+> 3. Remove the now-unused calls to `self._position_repo.get_latest_for_mmsis(...)` and `self._position_repo.get_latest_for_imos(...)` from this method.
+> 4. If `LatestPosition` is not yet available (fix 4 not applied), use `Position` with a subquery that selects `max(observed_at)` per MMSI grouped over the candidate vessel MMSIs. Either way, the Python loop comparing timestamps should be gone.
+> 5. Update the import at the top of `services.py` to include `LatestPosition` from `app.models.orm`.
+
+---
+
+## Order of implementation
+
+If you're prompting Codex incrementally, do them in this sequence because later fixes depend on earlier ones:
+
+1. **Fix 4 first** (atomic upsert + `latest_positions` table) — fixes 3 and 5 both reference it
+2. **Fix 5** (DB-side position ranking) — depends on `latest_positions`
+3. **Fix 3** (per-shipment cache invalidation) — independent but cleaner after the position model is stable
+4. **Fix 2** (hostile content detection) — fully independent, do anytime
+5. **Fix 1** (ADK session) — do last since it touches the request lifecycle and is easiest to verify manually
+
+For each Codex session, paste the relevant file(s) as context alongside the prompt above — Codex works best when it sees the exact code it's modifying rather than inferring from a description.

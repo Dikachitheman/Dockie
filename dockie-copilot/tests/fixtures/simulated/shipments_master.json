@@ -1,0 +1,14 @@
+{
+  "shipments": [
+    { "shipment_id": "ship-001", "customer": "Adebayo Motors", "broker": "Blue Anchor Logistics", "priority": "high", "lane": "US -> Lagos", "terminal_locode": "NGLOS", "vehicle_type": "default" },
+    { "shipment_id": "ship-002", "customer": "Prime Auto Trade", "broker": "Atlantic Cargo Desk", "priority": "high", "lane": "US -> Apapa", "terminal_locode": "NGAPP", "vehicle_type": "default" },
+    { "shipment_id": "ship-003", "customer": "Luna Vehicle Imports", "broker": "Westbridge Forwarding", "priority": "medium", "lane": "US -> Apapa", "terminal_locode": "NGAPP", "vehicle_type": "default" },
+    { "shipment_id": "ship-004", "customer": "Tema Fleet Buyers", "broker": "Harborline Ops", "priority": "medium", "lane": "US -> Tema", "terminal_locode": "GHTEM", "vehicle_type": "default" },
+    { "shipment_id": "ship-005", "customer": "Babs Auto Hub", "broker": "Blue Anchor Logistics", "priority": "high", "lane": "US -> Lagos", "terminal_locode": "NGLOS", "vehicle_type": "default" },
+    { "shipment_id": "ship-006", "customer": "Accra Equipment Ltd", "broker": "Harborline Ops", "priority": "low", "lane": "US -> Tema", "terminal_locode": "GHTEM", "vehicle_type": "equipment" },
+    { "shipment_id": "ship-007", "customer": "Ikeja Wheels", "broker": "Golden Route Agency", "priority": "high", "lane": "US -> Lagos", "terminal_locode": "NGLOS", "vehicle_type": "default" },
+    { "shipment_id": "ship-008", "customer": "Takoradi BuildCo", "broker": "Westbridge Forwarding", "priority": "medium", "lane": "US -> Takoradi", "terminal_locode": "GHTKD", "vehicle_type": "equipment" },
+    { "shipment_id": "ship-009", "customer": "Abidjan Motors", "broker": "Sahel Trade Services", "priority": "medium", "lane": "US -> Abidjan", "terminal_locode": "CIBRJ", "vehicle_type": "default" },
+    { "shipment_id": "ship-010", "customer": "Dakar Car House", "broker": "Sahel Trade Services", "priority": "medium", "lane": "US -> Dakar", "terminal_locode": "SNDKR", "vehicle_type": "default" }
+  ]
+}

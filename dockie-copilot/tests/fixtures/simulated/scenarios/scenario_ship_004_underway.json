@@ -1,0 +1,32 @@
+{
+  "positions": [
+    {
+      "source": "scenario_ship_004_underway",
+      "observed_at": "2026-03-30T09:05:00Z",
+      "mmsi": "311000333",
+      "imo": "9942202",
+      "vessel_name": "GREAT ACCRA",
+      "latitude": 5.18,
+      "longitude": -1.05,
+      "sog_knots": 12.6,
+      "cog_degrees": 83.0,
+      "heading_degrees": 82,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "TEMA"
+    }
+  ],
+  "port_observations": [
+    {
+      "port_locode": "GHTEM",
+      "terminal_name": "Tema Approach",
+      "vessel_name": "GREAT ACCRA",
+      "vessel_imo": "9942202",
+      "vessel_mmsi": "311000333",
+      "status": "inbound",
+      "event_type": "approach",
+      "detail": "The vessel remains underway toward Tema and has not yet reached anchorage.",
+      "source": "scenario_ship_004_underway",
+      "observed_at": "2026-03-30T09:05:00Z"
+    }
+  ]
+}

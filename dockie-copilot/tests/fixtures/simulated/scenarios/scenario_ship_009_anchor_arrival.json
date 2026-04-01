@@ -1,0 +1,32 @@
+{
+  "positions": [
+    {
+      "source": "scenario_ship_009_anchor_arrival",
+      "observed_at": "2026-03-30T15:50:00Z",
+      "mmsi": "636020202",
+      "imo": "9996606",
+      "vessel_name": "ATLANTIC MONROVIA",
+      "latitude": 5.24,
+      "longitude": -4.02,
+      "sog_knots": 0.1,
+      "cog_degrees": 18.0,
+      "heading_degrees": 16,
+      "navigation_status": "at_anchor",
+      "destination_text": "ABIDJAN"
+    }
+  ],
+  "port_observations": [
+    {
+      "port_locode": "CIBRJ",
+      "terminal_name": "Abidjan Anchorage",
+      "vessel_name": "ATLANTIC MONROVIA",
+      "vessel_imo": "9996606",
+      "vessel_mmsi": "636020202",
+      "status": "at_anchor",
+      "event_type": "anchor_arrival",
+      "detail": "The vessel has reached Abidjan anchorage and is waiting for berth assignment.",
+      "source": "scenario_ship_009_anchor_arrival",
+      "observed_at": "2026-03-30T15:50:00Z"
+    }
+  ]
+}

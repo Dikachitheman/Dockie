@@ -1,0 +1,3 @@
+PAAR notice summary for ship-001.
+Status: submitted to bank, awaiting issuance.
+Expected action: monitor issuance before realistic berth window begins.

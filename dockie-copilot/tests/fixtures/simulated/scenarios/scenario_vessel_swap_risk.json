@@ -1,0 +1,8 @@
+{
+  "positions": [
+    { "source": "scenario_vessel_swap_risk", "observed_at": "2026-03-30T08:20:00Z", "mmsi": "311000222", "imo": "9919876", "vessel_name": "GREAT TEMA", "latitude": 5.62, "longitude": 2.91, "sog_knots": 13.4, "cog_degrees": 89.0, "heading_degrees": 89, "navigation_status": "under_way_using_engine", "destination_text": "TIN CAN" }
+  ],
+  "knowledge_docs": [
+    { "source_name": "scenario_vessel_swap_risk", "source_type": "scenario_note", "shipment_id": "ship-002", "title": "Swap hypothesis", "content": "Secondary candidate GREAT TEMA is behaving more like the active Lagos-bound vessel than GREAT COTONOU.", "metadata": { "scenario": "vessel_swap_risk" } }
+  ]
+}

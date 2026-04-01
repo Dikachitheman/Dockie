@@ -1,0 +1,8 @@
+{
+  "shipment_updates": [
+    { "shipment_id": "ship-001", "status": "in_transit" }
+  ],
+  "knowledge_docs": [
+    { "source_name": "scenario_on_track", "source_type": "scenario_note", "shipment_id": "ship-001", "title": "On-track note", "content": "Shipment ship-001 is tracking close to plan. No intervention is currently recommended.", "metadata": { "scenario": "on_track" } }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "clearance_checklists": [
+    { "shipment_id": "ship-001", "form_m_approved": true, "bl_received": true, "paar_submitted_at": "2026-03-27T10:00:00Z", "paar_issued_at": null, "customs_duty_paid": false, "trucking_booked": false, "notes": "Customer is waiting on PAAR issuance before paying duty." },
+    { "shipment_id": "ship-002", "form_m_approved": true, "bl_received": true, "paar_submitted_at": "2026-03-25T09:15:00Z", "paar_issued_at": "2026-03-30T09:15:00Z", "customs_duty_paid": true, "trucking_booked": true, "notes": "Baseline state is operationally calm for ETA monitoring tests." },
+    { "shipment_id": "ship-003", "form_m_approved": false, "bl_received": false, "paar_submitted_at": null, "paar_issued_at": null, "customs_duty_paid": false, "trucking_booked": false, "notes": "Documents have not started because the vessel has not yet departed." },
+    { "shipment_id": "ship-005", "form_m_approved": true, "bl_received": true, "paar_submitted_at": "2026-03-24T08:00:00Z", "paar_issued_at": "2026-03-28T17:30:00Z", "customs_duty_paid": true, "trucking_booked": true, "notes": "Baseline state is berth-ready and should not trigger demurrage by default." },
+    { "shipment_id": "ship-007", "form_m_approved": true, "bl_received": true, "paar_submitted_at": "2026-03-20T11:00:00Z", "paar_issued_at": "2026-03-30T10:00:00Z", "customs_duty_paid": true, "trucking_booked": true, "notes": "Baseline state is calm and should not trigger freshness-side operational alerts by default." }
+  ],
+  "demurrage_tariffs": [
+    { "terminal_locode": "NGLOS", "vehicle_type": "default", "free_days": 7, "daily_rate_usd": 15, "daily_rate_ngn": 10000, "source": "simulated_tincan_tariff", "notes": "Tin Can ro-ro baseline tuned calmer so standby tests can flip upward later.", "effective_from": "2026-01-01T00:00:00Z" },
+    { "terminal_locode": "NGAPP", "vehicle_type": "default", "free_days": 5, "daily_rate_usd": 35, "daily_rate_ngn": 52000, "source": "simulated_apapa_tariff", "notes": "Apapa carries a higher congestion-adjusted baseline rate.", "effective_from": "2026-01-01T00:00:00Z" },
+    { "terminal_locode": "GHTEM", "vehicle_type": "equipment", "free_days": 7, "daily_rate_usd": 45, "daily_rate_ngn": 68000, "source": "simulated_tema_equipment_tariff", "notes": "Heavy equipment rate for Tema.", "effective_from": "2026-01-01T00:00:00Z" },
+    { "terminal_locode": "GHTKD", "vehicle_type": "equipment", "free_days": 6, "daily_rate_usd": 40, "daily_rate_ngn": 60000, "source": "simulated_takoradi_equipment_tariff", "notes": "Takoradi construction equipment baseline.", "effective_from": "2026-01-01T00:00:00Z" }
+  ],
+  "fx_rates": [
+    { "currency_pair": "USD/NGN", "rate": 1585.0, "source": "simulated_cbn", "observed_at": "2026-03-29T08:00:00Z" }
+  ],
+  "port_congestion_readings": [
+    { "port_locode": "NGLOS", "delay_days": 0.5, "queue_vessels": 4, "source": "simulated_gocomet", "detail": "Lagos roads are moving normally in the default baseline.", "observed_at": "2026-03-29T09:00:00Z" },
+    { "port_locode": "NGAPP", "delay_days": 1.0, "queue_vessels": 6, "source": "simulated_gocomet", "detail": "Apapa is busy but not unusually congested in the default baseline.", "observed_at": "2026-03-29T09:00:00Z" },
+    { "port_locode": "GHTEM", "delay_days": 1.5, "queue_vessels": 6, "source": "simulated_terminal_watch", "detail": "Tema is operating close to plan.", "observed_at": "2026-03-29T09:00:00Z" },
+    { "port_locode": "GHTKD", "delay_days": 1.0, "queue_vessels": 4, "source": "simulated_terminal_watch", "detail": "Takoradi congestion is low.", "observed_at": "2026-03-29T09:00:00Z" }
+  ],
+  "port_congestion_seasonality": [
+    { "port_locode": "NGLOS", "month": 3, "median_wait_days": 1.0, "p75_wait_days": 2.0, "p90_wait_days": 3.0, "source": "simulated_prior" },
+    { "port_locode": "NGAPP", "month": 3, "median_wait_days": 1.5, "p75_wait_days": 2.5, "p90_wait_days": 4.0, "source": "simulated_prior" },
+    { "port_locode": "GHTEM", "month": 3, "median_wait_days": 1.5, "p75_wait_days": 2.5, "p90_wait_days": 4.0, "source": "simulated_prior" },
+    { "port_locode": "GHTKD", "month": 3, "median_wait_days": 1.0, "p75_wait_days": 2.0, "p90_wait_days": 3.0, "source": "simulated_prior" }
+  ],
+  "carrier_performance_metrics": [
+    { "carrier": "sallaum", "service_lane": "US -> West Africa -> Lagos", "year_month": "2026-03", "median_delay_days": 1.8, "on_time_rate": 0.72, "sample_count": 11, "notes": "Usually reliable, but Lagos berth delays still create soft slippage." },
+    { "carrier": "grimaldi", "service_lane": "US -> West Africa -> Lagos", "year_month": "2026-03", "median_delay_days": 4.1, "on_time_rate": 0.38, "sample_count": 9, "notes": "This lane is showing optimistic declared ETAs and more hull substitutions." },
+    { "carrier": "grimaldi", "service_lane": "US -> West Africa -> Tema", "year_month": "2026-03", "median_delay_days": 1.2, "on_time_rate": 0.81, "sample_count": 7, "notes": "Tema sailings are steadier than Lagos-bound rotations." }
+  ]
+}

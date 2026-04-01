@@ -1,0 +1,7 @@
+{
+  "positions": [
+    { "source": "simulated_refresh", "observed_at": "2026-03-30T08:00:00Z", "mmsi": "357123000", "imo": "9935040", "vessel_name": "GREAT ABIDJAN", "latitude": 6.08, "longitude": 4.91, "sog_knots": 12.9, "cog_degrees": 92.0, "heading_degrees": 92, "navigation_status": "under_way_using_engine", "destination_text": "LAGOS" },
+    { "source": "simulated_refresh", "observed_at": "2026-03-30T08:00:00Z", "mmsi": "311000111", "imo": "9922345", "vessel_name": "GREAT COTONOU", "latitude": 5.07, "longitude": 3.12, "sog_knots": 4.4, "cog_degrees": 86.0, "heading_degrees": 86, "navigation_status": "under_way_using_engine", "destination_text": "TIN CAN" },
+    { "source": "simulated_refresh", "observed_at": "2026-03-30T08:00:00Z", "mmsi": "311000222", "imo": "9919876", "vessel_name": "GREAT TEMA", "latitude": 5.44, "longitude": 2.48, "sog_knots": 13.1, "cog_degrees": 88.0, "heading_degrees": 89, "navigation_status": "under_way_using_engine", "destination_text": "TIN CAN" }
+  ]
+}

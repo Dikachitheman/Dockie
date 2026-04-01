@@ -1,0 +1,6 @@
+{
+  "rows": [
+    { "carrier": "sallaum", "voyage_code": "SAL2404A", "vessel_name": "GREAT ABIDJAN", "vessel_imo": "9935040", "port_locode": "NGLOS", "etd": "2026-03-18T00:00:00Z", "eta": "2026-04-02T00:00:00Z", "source": "simulated_carrier_page", "scraped_at": "2026-03-29T12:00:00Z" },
+    { "carrier": "grimaldi", "voyage_code": "GRI2404L", "vessel_name": "GREAT COTONOU", "vessel_imo": "9922345", "port_locode": "NGAPP", "etd": "2026-03-16T00:00:00Z", "eta": "2026-04-03T00:00:00Z", "source": "simulated_carrier_page", "scraped_at": "2026-03-29T12:00:00Z" }
+  ]
+}

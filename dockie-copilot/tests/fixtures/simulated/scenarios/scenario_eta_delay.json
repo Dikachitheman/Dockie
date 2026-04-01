@@ -1,0 +1,11 @@
+{
+  "shipment_updates": [
+    { "shipment_id": "ship-004", "status": "delayed", "declared_eta_date": "2026-04-07T00:00:00Z" }
+  ],
+  "eta_revisions": [
+    { "shipment_id": "ship-004", "carrier": "sallaum", "revision_at": "2026-03-31T10:00:00Z", "previous_eta": "2026-04-03T00:00:00Z", "new_eta": "2026-04-07T00:00:00Z", "source": "scenario_eta_delay" }
+  ],
+  "port_congestion_readings": [
+    { "port_locode": "NGAPP", "delay_days": 2.5, "queue_vessels": 8, "source": "scenario_eta_delay", "detail": "Simulated increased congestion causing additional delays.", "observed_at": "2026-03-31T09:00:00Z" }
+  ]
+}

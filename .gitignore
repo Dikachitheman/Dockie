@@ -1,0 +1,46 @@
+# Ignore everything at the repo root
+/*
+
+# Keep this .gitignore file
+!/.gitignore
+
+# Allow only the frontend and dockie-copilot folders and their contents
+!/frontend/
+!/frontend/**
+!/dockie-copilot/
+!/dockie-copilot/**
+
+# Never commit secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Ignore dependency/build folders
+**/node_modules/
+**/dist/
+**/build/
+
+# Python virtualenvs and artifacts
+**/.venv/
+**/venv/
+**/env/
+**/__pycache__/
+**/*.pyc
+**/*.egg-info/
+
+# Runtime/temp/generated files
+**/runtime/
+**/.temp/
+**/*.stackdump
+
+# Editor/project files
+.vscode/
+.idea/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db**/*.timestamp-*.mjs
+**/bun.lockb
+**/*.timestamp-*.mjs
+**/bun.lock

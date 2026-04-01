@@ -1,0 +1,32 @@
+{
+  "positions": [
+    {
+      "source": "scenario_ship_004_anchor_arrival",
+      "observed_at": "2026-03-30T09:40:00Z",
+      "mmsi": "311000333",
+      "imo": "9942202",
+      "vessel_name": "GREAT ACCRA",
+      "latitude": 5.61,
+      "longitude": -0.02,
+      "sog_knots": 0.1,
+      "cog_degrees": 17.0,
+      "heading_degrees": 14,
+      "navigation_status": "at_anchor",
+      "destination_text": "TEMA"
+    }
+  ],
+  "port_observations": [
+    {
+      "port_locode": "GHTEM",
+      "terminal_name": "Tema Anchorage",
+      "vessel_name": "GREAT ACCRA",
+      "vessel_imo": "9942202",
+      "vessel_mmsi": "311000333",
+      "status": "at_anchor",
+      "event_type": "anchor_arrival",
+      "detail": "The vessel has reached Tema anchorage and is waiting for berth assignment.",
+      "source": "scenario_ship_004_anchor_arrival",
+      "observed_at": "2026-03-30T09:40:00Z"
+    }
+  ]
+}

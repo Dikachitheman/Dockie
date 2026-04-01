@@ -1,0 +1,1321 @@
+{
+  "shipments": [
+    {
+      "shipment_id": "ship-001",
+      "booking_ref": "SAL-LAG-24001",
+      "carrier": "sallaum",
+      "service_lane": "US -> West Africa -> Lagos",
+      "load_port": "USBAL",
+      "discharge_port": "NGLOS",
+      "cargo_type": "ro-ro vehicles",
+      "units": 42,
+      "status": "in_transit",
+      "declared_departure_date": "2026-03-18T00:00:00Z",
+      "declared_eta_date": "2026-04-03T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT ABIDJAN",
+          "imo": "9935040",
+          "mmsi": "357123000"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_schedule",
+          "captured_at": "2026-03-31T07:40:00Z",
+          "claim": "Lagos discharge is now expected one day later after a slower final approach."
+        },
+        {
+          "source": "aisstream",
+          "captured_at": "2026-03-31T09:15:00Z",
+          "claim": "Latest AIS position shows the vessel on the Lagos approach with reduced speed versus the prior day."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-002",
+      "booking_ref": "GRI-LAG-24007",
+      "carrier": "grimaldi",
+      "service_lane": "US -> West Africa -> Lagos",
+      "load_port": "USSAV",
+      "discharge_port": "NGAPP",
+      "cargo_type": "rolling equipment",
+      "units": 11,
+      "status": "delayed",
+      "declared_departure_date": "2026-03-16T00:00:00Z",
+      "declared_eta_date": "2026-04-05T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT COTONOU",
+          "imo": "9922345",
+          "mmsi": "311000111"
+        },
+        {
+          "name": "GREAT TEMA",
+          "imo": "9919876",
+          "mmsi": "311000222"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_fleet_context",
+          "captured_at": "2026-03-28T10:05:00Z",
+          "claim": "Service rotation may swap hulls late in voyage planning."
+        },
+        {
+          "source": "port_observation",
+          "captured_at": "2026-03-31T08:05:00Z",
+          "claim": "Tin Can approach congestion persists and now points to a later arrival window than originally planned."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-003",
+      "booking_ref": "SAL-APP-24011",
+      "carrier": "sallaum",
+      "service_lane": "US -> West Africa -> Apapa",
+      "load_port": "USNWK",
+      "discharge_port": "NGAPP",
+      "cargo_type": "used sedans",
+      "units": 18,
+      "status": "in_transit",
+      "declared_departure_date": "2026-03-31T00:00:00Z",
+      "declared_eta_date": "2026-04-16T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT LAGOS",
+          "imo": "9941101",
+          "mmsi": "357456100"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_schedule",
+          "captured_at": "2026-03-31T12:10:00Z",
+          "claim": "Cargo has cleared the load-port window and is now marked as sailing on the westbound service."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-004",
+      "booking_ref": "GRI-TEM-24012",
+      "carrier": "grimaldi",
+      "service_lane": "US -> West Africa -> Tema",
+      "load_port": "USJAX",
+      "discharge_port": "GHTEM",
+      "cargo_type": "ro-ro vans",
+      "units": 9,
+      "status": "assigned",
+      "declared_departure_date": "2026-04-01T00:00:00Z",
+      "declared_eta_date": "2026-04-19T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT ACCRA",
+          "imo": "9942202",
+          "mmsi": "311000333"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_booking",
+          "captured_at": "2026-03-31T10:25:00Z",
+          "claim": "Shipment is now assigned to the Jacksonville to Tema rotation and awaiting final departure."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-005",
+      "booking_ref": "SAL-LOS-24015",
+      "carrier": "sallaum",
+      "service_lane": "US -> West Africa -> Lagos",
+      "load_port": "USMIA",
+      "discharge_port": "NGLOS",
+      "cargo_type": "SUVs",
+      "units": 23,
+      "status": "delayed",
+      "declared_departure_date": "2026-03-14T00:00:00Z",
+      "declared_eta_date": "2026-04-01T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT LUANDA",
+          "imo": "9953303",
+          "mmsi": "357555444"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "aisstream",
+          "captured_at": "2026-03-31T08:50:00Z",
+          "claim": "The vessel remains at anchor off Lagos while awaiting a berth slot."
+        },
+        {
+          "source": "port_observation",
+          "captured_at": "2026-03-31T07:25:00Z",
+          "claim": "Anchorage queue remains elevated at Lagos outer roads and is slowing discharge access."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-006",
+      "booking_ref": "GRI-ACC-24003",
+      "carrier": "grimaldi",
+      "service_lane": "US -> West Africa -> Tema/Accra",
+      "load_port": "USHOU",
+      "discharge_port": "GHTEM",
+      "cargo_type": "forklifts",
+      "units": 4,
+      "status": "delivered",
+      "declared_departure_date": "2026-02-20T00:00:00Z",
+      "declared_eta_date": "2026-03-12T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GRANDE GHANA",
+          "imo": "9974404",
+          "mmsi": "247001234"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_delivery_notice",
+          "captured_at": "2026-03-13T16:10:00Z",
+          "claim": "Discharge was completed and final delivery release was issued."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-007",
+      "booking_ref": "SAL-LOS-24019",
+      "carrier": "sallaum",
+      "service_lane": "US -> West Africa -> Lagos",
+      "load_port": "USPHL",
+      "discharge_port": "NGLOS",
+      "cargo_type": "pickup trucks",
+      "units": 15,
+      "status": "delayed",
+      "declared_departure_date": "2026-03-10T00:00:00Z",
+      "declared_eta_date": "2026-03-28T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT BONNY",
+          "imo": "9966606",
+          "mmsi": "357777666"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_schedule",
+          "captured_at": "2026-03-27T11:30:00Z",
+          "claim": "Carrier still shows Lagos as destination but no fresh movement update has been posted."
+        },
+        {
+          "source": "operator_note",
+          "captured_at": "2026-03-29T09:45:00Z",
+          "claim": "Customer requested proactive alerting because this cargo is already running behind plan."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-008",
+      "booking_ref": "GRI-TKD-24022",
+      "carrier": "grimaldi",
+      "service_lane": "US -> West Africa -> Takoradi",
+      "load_port": "USGAL",
+      "discharge_port": "GHTKD",
+      "cargo_type": "construction vehicles",
+      "units": 6,
+      "status": "in_transit",
+      "declared_departure_date": "2026-03-21T00:00:00Z",
+      "declared_eta_date": "2026-04-07T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT DAKAR",
+          "imo": "9985505",
+          "mmsi": "311000444"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "orbcomm",
+          "captured_at": "2026-03-29T18:42:00Z",
+          "claim": "The vessel remains on a clean eastbound track toward the Gulf of Guinea."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-009",
+      "booking_ref": "SAL-BRJ-24024",
+      "carrier": "sallaum",
+      "service_lane": "US -> West Africa -> Abidjan",
+      "load_port": "USCHS",
+      "discharge_port": "CIBRJ",
+      "cargo_type": "compact cars",
+      "units": 27,
+      "status": "assigned",
+      "declared_departure_date": "2026-03-24T00:00:00Z",
+      "declared_eta_date": "2026-04-09T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "ATLANTIC MONROVIA",
+          "imo": "9996606",
+          "mmsi": "636020202"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "carrier_schedule",
+          "captured_at": "2026-03-31T06:35:00Z",
+          "claim": "Abidjan remains the planned discharge port and the booking is now linked to a sailing assignment."
+        },
+        {
+          "source": "historical_ais",
+          "captured_at": "2026-03-31T08:10:00Z",
+          "claim": "Recent vessel movement remains consistent with a normal approach toward Abidjan."
+        }
+      ]
+    },
+    {
+      "shipment_id": "ship-010",
+      "booking_ref": "SAL-DKR-24029",
+      "carrier": "sallaum",
+      "service_lane": "US -> West Africa -> Dakar",
+      "load_port": "USBAL",
+      "discharge_port": "SNDKR",
+      "cargo_type": "mixed vehicle lot",
+      "units": 31,
+      "status": "in_transit",
+      "declared_departure_date": "2026-03-19T00:00:00Z",
+      "declared_eta_date": "2026-04-05T00:00:00Z",
+      "candidate_vessels": [
+        {
+          "name": "GREAT BATA",
+          "imo": "9907707",
+          "mmsi": "357888777"
+        }
+      ],
+      "evidence": [
+        {
+          "source": "aisstream",
+          "captured_at": "2026-03-29T18:32:00Z",
+          "claim": "Live position remains fresh and the vessel is holding consistent speed toward Dakar."
+        }
+      ]
+    }
+  ],
+  "vessel_positions": [
+    {
+      "source": "aisstream",
+      "observed_at": "2026-03-31T20:15:00Z",
+      "mmsi": "357123000",
+      "imo": "9935040",
+      "vessel_name": "GREAT ABIDJAN",
+      "latitude": 6.16,
+      "longitude": 4.86,
+      "sog_knots": 12.1,
+      "cog_degrees": 94.0,
+      "heading_degrees": 93,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "LAGOS"
+    },
+    {
+      "source": "orbcomm",
+      "observed_at": "2026-03-31T20:05:00Z",
+      "mmsi": "311000111",
+      "imo": "9922345",
+      "vessel_name": "GREAT COTONOU",
+      "latitude": 5.02,
+      "longitude": 3.34,
+      "sog_knots": 6.2,
+      "cog_degrees": 88.0,
+      "heading_degrees": 88,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "TIN CAN"
+    },
+    {
+      "source": "aisstream",
+      "observed_at": "2026-03-31T19:50:00Z",
+      "mmsi": "357555444",
+      "imo": "9953303",
+      "vessel_name": "GREAT LUANDA",
+      "latitude": 6.21,
+      "longitude": 3.28,
+      "sog_knots": 0.1,
+      "cog_degrees": 12.0,
+      "heading_degrees": 8,
+      "navigation_status": "at_anchor",
+      "destination_text": "LAGOS"
+    },
+    {
+      "source": "historical_ais",
+      "observed_at": "2026-03-31T18:30:00Z",
+      "mmsi": "357777666",
+      "imo": "9966606",
+      "vessel_name": "GREAT BONNY",
+      "latitude": 5.36,
+      "longitude": 3.02,
+      "sog_knots": 10.4,
+      "cog_degrees": 89.0,
+      "heading_degrees": 90,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "LAGOS"
+    },
+    {
+      "source": "orbcomm",
+      "observed_at": "2026-03-31T19:42:00Z",
+      "mmsi": "311000444",
+      "imo": "9985505",
+      "vessel_name": "GREAT DAKAR",
+      "latitude": 4.76,
+      "longitude": 1.05,
+      "sog_knots": 13.9,
+      "cog_degrees": 99.0,
+      "heading_degrees": 99,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "TAKORADI"
+    },
+    {
+      "source": "historical_ais",
+      "observed_at": "2026-03-31T19:10:00Z",
+      "mmsi": "636020202",
+      "imo": "9996606",
+      "vessel_name": "ATLANTIC MONROVIA",
+      "latitude": 5.18,
+      "longitude": -3.92,
+      "sog_knots": 11.8,
+      "cog_degrees": 101.0,
+      "heading_degrees": 102,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "ABIDJAN"
+    },
+    {
+      "source": "aisstream",
+      "observed_at": "2026-03-31T18:58:00Z",
+      "mmsi": "357888777",
+      "imo": "9907707",
+      "vessel_name": "GREAT BATA",
+      "latitude": 13.05,
+      "longitude": -17.41,
+      "sog_knots": 4.9,
+      "cog_degrees": 48.0,
+      "heading_degrees": 46,
+      "navigation_status": "under_way_using_engine",
+      "destination_text": "DAKAR"
+    }
+  ],
+  "vessel_history": [
+    {
+      "mmsi": "357123000",
+      "imo": "9935040",
+      "vessel_name": "GREAT ABIDJAN",
+      "points": [
+        {
+          "observed_at": "2026-03-18T00:00:00Z",
+          "latitude": 39.18,
+          "longitude": -76.49,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-20T00:00:00Z",
+          "latitude": 37.9,
+          "longitude": -72.4,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-23T00:00:00Z",
+          "latitude": 34.1,
+          "longitude": -63.2,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-26T00:00:00Z",
+          "latitude": 25.4,
+          "longitude": -43.8,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T00:00:00Z",
+          "latitude": 4.36,
+          "longitude": -3.1,
+          "sog_knots": 14.8,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T05:40:00Z",
+          "latitude": 4.58,
+          "longitude": -1.64,
+          "sog_knots": 14.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T12:00:00Z",
+          "latitude": 4.91,
+          "longitude": 0.3,
+          "sog_knots": 14.5,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T20:30:00Z",
+          "latitude": 5.08,
+          "longitude": 1.22,
+          "sog_knots": 13.8,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T00:00:00Z",
+          "latitude": 5.31,
+          "longitude": 2.14,
+          "sog_knots": 14.2,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T09:10:00Z",
+          "latitude": 5.54,
+          "longitude": 3.21,
+          "sog_knots": 14.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T18:20:00Z",
+          "latitude": 5.82,
+          "longitude": 4.31,
+          "sog_knots": 13.9,
+          "source": "aisstream"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-18T10:00:00Z",
+          "details": "Vessel departed USBAL and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-22T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-03-26T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "schedule_eta_recorded",
+          "event_at": "2026-03-28T08:12:00Z",
+          "details": "Carrier declared 2026-04-02 Lagos ETA.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "course_holding",
+          "event_at": "2026-03-28T20:35:00Z",
+          "details": "Track remains stable on the Lagos approach corridor.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "lagos_destination_detected",
+          "event_at": "2026-03-29T09:25:00Z",
+          "details": "Destination string narrowed to Lagos/Tin Can corridor handling.",
+          "source": "aisstream"
+        },
+        {
+          "event_type": "position_refresh",
+          "event_at": "2026-03-29T18:20:00Z",
+          "details": "Fresh AIS position received east of Lagos approach.",
+          "source": "aisstream"
+        }
+      ]
+    },
+    {
+      "mmsi": "311000111",
+      "imo": "9922345",
+      "vessel_name": "GREAT COTONOU",
+      "points": [
+        {
+          "observed_at": "2026-03-16T00:00:00Z",
+          "latitude": 32.08,
+          "longitude": -81.09,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-18T00:00:00Z",
+          "latitude": 31.5,
+          "longitude": -76.8,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-21T00:00:00Z",
+          "latitude": 28.1,
+          "longitude": -65.0,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-24T00:00:00Z",
+          "latitude": 19.8,
+          "longitude": -42.6,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T03:00:00Z",
+          "latitude": 4.11,
+          "longitude": -1.24,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T09:45:00Z",
+          "latitude": 4.28,
+          "longitude": -0.08,
+          "sog_knots": 12.9,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T15:00:00Z",
+          "latitude": 4.42,
+          "longitude": 0.8,
+          "sog_knots": 12.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T22:10:00Z",
+          "latitude": 4.55,
+          "longitude": 1.36,
+          "sog_knots": 11.4,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T03:20:00Z",
+          "latitude": 4.73,
+          "longitude": 1.91,
+          "sog_knots": 10.2,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T09:30:00Z",
+          "latitude": 4.84,
+          "longitude": 2.32,
+          "sog_knots": 9.1,
+          "source": "orbcomm"
+        },
+        {
+          "observed_at": "2026-03-29T15:05:00Z",
+          "latitude": 4.97,
+          "longitude": 2.78,
+          "sog_knots": 8.4,
+          "source": "orbcomm"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-16T10:00:00Z",
+          "details": "Vessel departed USSAV and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-20T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-03-24T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "schedule_eta_recorded",
+          "event_at": "2026-03-28T15:20:00Z",
+          "details": "Carrier still published an April 1 working ETA before later slippage.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "eta_revised",
+          "event_at": "2026-03-29T12:40:00Z",
+          "details": "Arrival estimate slipped from April 1 to April 3.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "speed_drop_detected",
+          "event_at": "2026-03-29T09:35:00Z",
+          "details": "The vessel slowed materially as the service rotation looked unsettled.",
+          "source": "orbcomm"
+        },
+        {
+          "event_type": "swap_risk_flagged",
+          "event_at": "2026-03-29T13:10:00Z",
+          "details": "Service rotation still lists GREAT TEMA as secondary candidate vessel.",
+          "source": "carrier_fleet_context"
+        }
+      ]
+    },
+    {
+      "mmsi": "357555444",
+      "imo": "9953303",
+      "vessel_name": "GREAT LUANDA",
+      "points": [
+        {
+          "observed_at": "2026-03-14T00:00:00Z",
+          "latitude": 25.77,
+          "longitude": -80.18,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-16T00:00:00Z",
+          "latitude": 24.9,
+          "longitude": -75.2,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-19T00:00:00Z",
+          "latitude": 21.7,
+          "longitude": -62.0,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-22T00:00:00Z",
+          "latitude": 15.9,
+          "longitude": -40.4,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T06:00:00Z",
+          "latitude": 5.92,
+          "longitude": 1.44,
+          "sog_knots": 12.9,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T12:20:00Z",
+          "latitude": 6.01,
+          "longitude": 2.06,
+          "sog_knots": 11.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T18:00:00Z",
+          "latitude": 6.08,
+          "longitude": 2.62,
+          "sog_knots": 8.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T03:40:00Z",
+          "latitude": 6.13,
+          "longitude": 2.89,
+          "sog_knots": 5.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T09:00:00Z",
+          "latitude": 6.18,
+          "longitude": 3.05,
+          "sog_knots": 2.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T13:30:00Z",
+          "latitude": 6.2,
+          "longitude": 3.13,
+          "sog_knots": 0.9,
+          "source": "aisstream"
+        },
+        {
+          "observed_at": "2026-03-29T18:05:00Z",
+          "latitude": 6.21,
+          "longitude": 3.21,
+          "sog_knots": 0.4,
+          "source": "aisstream"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-14T10:00:00Z",
+          "details": "Vessel departed USMIA and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-18T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-03-22T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "berth_queue_warning",
+          "event_at": "2026-03-28T18:10:00Z",
+          "details": "Port monitoring flagged a growing berth queue ahead of Lagos roads.",
+          "source": "port_observation"
+        },
+        {
+          "event_type": "speed_decay_detected",
+          "event_at": "2026-03-29T03:45:00Z",
+          "details": "Progress slowed sharply while approaching the anchorage zone.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "extended_wait",
+          "event_at": "2026-03-29T13:32:00Z",
+          "details": "Vessel drift narrowed to an anchorage holding pattern with repeated low-speed updates.",
+          "source": "aisstream"
+        },
+        {
+          "event_type": "arrived_anchorage",
+          "event_at": "2026-03-29T17:58:00Z",
+          "details": "Navigation status changed to at_anchor near Lagos roads.",
+          "source": "aisstream"
+        },
+        {
+          "event_type": "port_delay_watch",
+          "event_at": "2026-03-29T17:20:00Z",
+          "details": "Port note indicates elevated anchorage wait times.",
+          "source": "port_observation"
+        }
+      ]
+    },
+    {
+      "mmsi": "247001234",
+      "imo": "9974404",
+      "vessel_name": "GRANDE GHANA",
+      "points": [
+        {
+          "observed_at": "2026-02-20T00:00:00Z",
+          "latitude": 29.73,
+          "longitude": -94.99,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-02-22T00:00:00Z",
+          "latitude": 28.8,
+          "longitude": -88.4,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-02-25T00:00:00Z",
+          "latitude": 24.4,
+          "longitude": -72.3,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-02-28T00:00:00Z",
+          "latitude": 16.8,
+          "longitude": -44.5,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-10T06:00:00Z",
+          "latitude": 4.92,
+          "longitude": -0.28,
+          "sog_knots": 9.8,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-11T05:20:00Z",
+          "latitude": 5.11,
+          "longitude": -0.12,
+          "sog_knots": 4.2,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-11T11:00:00Z",
+          "latitude": 5.16,
+          "longitude": -0.03,
+          "sog_knots": 0.0,
+          "source": "historical_ais"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-02-20T10:00:00Z",
+          "details": "Vessel departed USHOU and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-02-24T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-02-28T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "berthed",
+          "event_at": "2026-03-11T11:20:00Z",
+          "details": "Vessel berthed at Tema terminal.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "delivered",
+          "event_at": "2026-03-13T16:10:00Z",
+          "details": "Shipment released to consignee after discharge completion.",
+          "source": "carrier_delivery_notice"
+        }
+      ]
+    },
+    {
+      "mmsi": "357777666",
+      "imo": "9966606",
+      "vessel_name": "GREAT BONNY",
+      "points": [
+        {
+          "observed_at": "2026-03-10T00:00:00Z",
+          "latitude": 39.88,
+          "longitude": -75.24,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-12T00:00:00Z",
+          "latitude": 38.5,
+          "longitude": -71.2,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-15T00:00:00Z",
+          "latitude": 34.8,
+          "longitude": -60.8,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-18T00:00:00Z",
+          "latitude": 24.1,
+          "longitude": -40.9,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-25T03:00:00Z",
+          "latitude": 4.02,
+          "longitude": -2.84,
+          "sog_knots": 11.3,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-26T05:00:00Z",
+          "latitude": 4.39,
+          "longitude": -0.54,
+          "sog_knots": 8.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-27T06:40:00Z",
+          "latitude": 4.88,
+          "longitude": 1.84,
+          "sog_knots": 4.6,
+          "source": "historical_ais"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-10T10:00:00Z",
+          "details": "Vessel departed USPHL and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-14T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-03-18T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "position_feed_degraded",
+          "event_at": "2026-03-28T10:00:00Z",
+          "details": "No fresh AIS update has been observed within the expected refresh window.",
+          "source": "system"
+        },
+        {
+          "event_type": "eta_missed",
+          "event_at": "2026-03-29T08:00:00Z",
+          "details": "Shipment has passed the declared ETA without a fresh arrival confirmation.",
+          "source": "system"
+        }
+      ]
+    },
+    {
+      "mmsi": "311000444",
+      "imo": "9985505",
+      "vessel_name": "GREAT DAKAR",
+      "points": [
+        {
+          "observed_at": "2026-03-21T00:00:00Z",
+          "latitude": 29.31,
+          "longitude": -94.79,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-23T00:00:00Z",
+          "latitude": 28.6,
+          "longitude": -88.9,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-26T00:00:00Z",
+          "latitude": 24.2,
+          "longitude": -72.8,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-27T12:00:00Z",
+          "latitude": 17.3,
+          "longitude": -45.1,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T04:00:00Z",
+          "latitude": 4.62,
+          "longitude": -5.18,
+          "sog_knots": 15.0,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T16:00:00Z",
+          "latitude": 4.84,
+          "longitude": -3.42,
+          "sog_knots": 14.9,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T06:00:00Z",
+          "latitude": 4.99,
+          "longitude": -1.85,
+          "sog_knots": 14.8,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T18:42:00Z",
+          "latitude": 5.14,
+          "longitude": -0.72,
+          "sog_knots": 14.8,
+          "source": "orbcomm"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-21T10:00:00Z",
+          "details": "Vessel departed USGAL and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-25T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-03-29T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "course_holding",
+          "event_at": "2026-03-29T18:42:00Z",
+          "details": "Track remains stable toward Takoradi discharge.",
+          "source": "orbcomm"
+        }
+      ]
+    },
+    {
+      "mmsi": "636020202",
+      "imo": "9996606",
+      "vessel_name": "ATLANTIC MONROVIA",
+      "points": [
+        {
+          "observed_at": "2026-03-24T00:00:00Z",
+          "latitude": 32.78,
+          "longitude": -79.93,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-26T00:00:00Z",
+          "latitude": 31.9,
+          "longitude": -75.3,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-27T06:00:00Z",
+          "latitude": 28.7,
+          "longitude": -64.1,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-27T18:00:00Z",
+          "latitude": 20.2,
+          "longitude": -42.2,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T02:00:00Z",
+          "latitude": 4.97,
+          "longitude": -10.2,
+          "sog_knots": 13.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T03:00:00Z",
+          "latitude": 5.19,
+          "longitude": -6.74,
+          "sog_knots": 13.3,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T14:00:00Z",
+          "latitude": 5.08,
+          "longitude": -8.13,
+          "sog_knots": 13.4,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T16:40:00Z",
+          "latitude": 5.31,
+          "longitude": -5.44,
+          "sog_knots": 13.2,
+          "source": "historical_ais"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-24T10:00:00Z",
+          "details": "Vessel departed USCHS and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-28T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-04-01T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "corridor_progress",
+          "event_at": "2026-03-29T16:40:00Z",
+          "details": "Historical AIS confirms steady progress toward Abidjan.",
+          "source": "historical_ais"
+        }
+      ]
+    },
+    {
+      "mmsi": "357888777",
+      "imo": "9907707",
+      "vessel_name": "GREAT BATA",
+      "points": [
+        {
+          "observed_at": "2026-03-19T00:00:00Z",
+          "latitude": 39.18,
+          "longitude": -76.49,
+          "sog_knots": 0.8,
+          "source": "carrier_schedule"
+        },
+        {
+          "observed_at": "2026-03-21T00:00:00Z",
+          "latitude": 37.9,
+          "longitude": -72.4,
+          "sog_knots": 13.6,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-24T00:00:00Z",
+          "latitude": 34.1,
+          "longitude": -63.2,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-27T00:00:00Z",
+          "latitude": 25.4,
+          "longitude": -43.8,
+          "sog_knots": 14.7,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T00:00:00Z",
+          "latitude": 10.92,
+          "longitude": -22.84,
+          "sog_knots": 15.1,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-28T12:00:00Z",
+          "latitude": 11.43,
+          "longitude": -20.94,
+          "sog_knots": 15.2,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T00:00:00Z",
+          "latitude": 12.04,
+          "longitude": -19.08,
+          "sog_knots": 15.3,
+          "source": "historical_ais"
+        },
+        {
+          "observed_at": "2026-03-29T18:32:00Z",
+          "latitude": 12.74,
+          "longitude": -17.48,
+          "sog_knots": 15.3,
+          "source": "aisstream"
+        }
+      ],
+      "events": [
+        {
+          "event_type": "departed_load_port",
+          "event_at": "2026-03-19T10:00:00Z",
+          "details": "Vessel departed USBAL and cleared the North American load port rotation.",
+          "source": "carrier_schedule"
+        },
+        {
+          "event_type": "atlantic_crossing_underway",
+          "event_at": "2026-03-23T12:00:00Z",
+          "details": "Voyage settled into a steady transatlantic crossing with stable speed and heading.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "west_africa_approach_window",
+          "event_at": "2026-03-27T06:00:00Z",
+          "details": "Track entered the West Africa approach window before the final Lagos corridor updates.",
+          "source": "historical_ais"
+        },
+        {
+          "event_type": "fresh_position_confirmed",
+          "event_at": "2026-03-29T18:32:00Z",
+          "details": "The vessel remains on-plan with a fresh live signal.",
+          "source": "aisstream"
+        }
+      ]
+    }
+  ],
+  "malformed_and_stale_payloads": [
+    {
+      "id": "stale-live-position-001",
+      "kind": "stale",
+      "source": "aisstream",
+      "received_at": "2026-03-29T18:50:00Z",
+      "payload": {
+        "MetaData": {
+          "MMSI": 357123000,
+          "ShipName": "GREAT ABIDJAN",
+          "time_utc": "2026-03-20T09:00:00Z"
+        },
+        "Message": {
+          "PositionReport": {
+            "Latitude": 5.25,
+            "Longitude": 3.85,
+            "Sog": 14.2,
+            "Cog": 92.5,
+            "TrueHeading": 91
+          }
+        }
+      },
+      "expected_handling": [
+        "mark payload stale relative to ingest time",
+        "do not replace a newer live position",
+        "surface source freshness warning"
+      ]
+    },
+    {
+      "id": "malformed-position-001",
+      "kind": "malformed",
+      "source": "aisstream",
+      "received_at": "2026-03-29T18:55:00Z",
+      "payload": {
+        "MetaData": {
+          "MMSI": "unknown",
+          "ShipName": "GREAT ABIDJAN",
+          "time_utc": "not-a-timestamp"
+        },
+        "Message": {
+          "PositionReport": {
+            "Latitude": 190.5,
+            "Longitude": "east",
+            "Sog": -4,
+            "Cog": 999
+          }
+        }
+      },
+      "expected_handling": [
+        "reject or quarantine as invalid payload",
+        "record validation reasons",
+        "avoid partial normalization into trusted state"
+      ]
+    },
+    {
+      "id": "malformed-schedule-001",
+      "kind": "malformed",
+      "source": "carrier_schedule",
+      "received_at": "2026-03-29T19:05:00Z",
+      "payload": {
+        "carrier": "sallaum",
+        "service_name": "",
+        "voyage_code": null,
+        "calls": [
+          {
+            "port_name": "Lagos",
+            "eta": "2026-02-30",
+            "etd": ""
+          },
+          {
+            "port_name": 404,
+            "eta": "2026-03-28T12:00:00Z"
+          }
+        ]
+      },
+      "expected_handling": [
+        "detect invalid dates and missing required fields",
+        "avoid promoting route claims to high-confidence schedule evidence",
+        "degrade schedule-source health if repeated"
+      ]
+    }
+  ]
+}

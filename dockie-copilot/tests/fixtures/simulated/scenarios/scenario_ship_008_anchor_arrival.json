@@ -1,0 +1,32 @@
+{
+  "positions": [
+    {
+      "source": "scenario_ship_008_anchor_arrival",
+      "observed_at": "2026-03-30T09:25:00Z",
+      "mmsi": "311000444",
+      "imo": "9985505",
+      "vessel_name": "GREAT DAKAR",
+      "latitude": 4.89,
+      "longitude": -1.77,
+      "sog_knots": 0.1,
+      "cog_degrees": 21.0,
+      "heading_degrees": 18,
+      "navigation_status": "at_anchor",
+      "destination_text": "TAKORADI"
+    }
+  ],
+  "port_observations": [
+    {
+      "port_locode": "GHTKD",
+      "terminal_name": "Takoradi Anchorage",
+      "vessel_name": "GREAT DAKAR",
+      "vessel_imo": "9985505",
+      "vessel_mmsi": "311000444",
+      "status": "at_anchor",
+      "event_type": "anchor_arrival",
+      "detail": "The vessel has reached anchorage outside Takoradi and is waiting for berth assignment.",
+      "source": "scenario_ship_008_anchor_arrival",
+      "observed_at": "2026-03-30T09:25:00Z"
+    }
+  ]
+}
