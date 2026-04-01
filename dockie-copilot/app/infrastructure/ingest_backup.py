@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import func, select, text
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
@@ -44,7 +44,6 @@ from app.models.orm import (
     Evidence,
     QuarantinedEvent,
     RawEvent,
-    Shipment,
     ShipmentVessel,
     SourceHealth,
     VoyageEvent,
@@ -503,42 +502,6 @@ async def ingest_malicious_payload(session: AsyncSession, path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Full ingest runner
 # ---------------------------------------------------------------------------
-
-# Serialize auto-ingest when multiple processes start together (e.g. app + standby-worker).
-_FIXTURE_INGEST_LOCK_KEY1 = 73_214
-_FIXTURE_INGEST_LOCK_KEY2 = 90_210
-
-
-async def ensure_fixture_data_if_empty(session: AsyncSession) -> bool:
-    """
-    If there are no shipments, run the full fixture ingest (same as CLI ``ingest``).
-
-    Uses a PostgreSQL advisory lock so concurrent callers (API + standby worker)
-    do not double-ingest on an empty database.
-
-    Returns:
-        True if a full ingest ran, False if data was already present.
-    """
-    await session.execute(
-        text(
-            f"SELECT pg_advisory_lock({_FIXTURE_INGEST_LOCK_KEY1}, {_FIXTURE_INGEST_LOCK_KEY2})"
-        )
-    )
-    try:
-        n = (await session.execute(select(func.count()).select_from(Shipment))).scalar_one()
-        if int(n or 0) > 0:
-            logger.info("fixture_data_already_present", shipment_count=int(n))
-            return False
-        logger.info("fixture_data_empty_ingesting")
-        await run_full_ingest(session)
-        return True
-    finally:
-        await session.execute(
-            text(
-                f"SELECT pg_advisory_unlock({_FIXTURE_INGEST_LOCK_KEY1}, {_FIXTURE_INGEST_LOCK_KEY2})"
-            )
-        )
-
 
 async def run_full_ingest(session: AsyncSession) -> None:
     await _seed_source_health(session)
