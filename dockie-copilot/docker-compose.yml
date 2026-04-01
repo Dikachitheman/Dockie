@@ -1,11 +1,8 @@
-version: "3.9"
-
 services:
   db:
     build:
       context: .
       dockerfile: Dockerfile.postgres
-    image: dockie-postgres:15-postgis-pgvector
     container_name: dockie-db
     restart: unless-stopped
     environment:
