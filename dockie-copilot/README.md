@@ -187,3 +187,210 @@ Recommended setup:
 - **All text input is treated as untrusted** — sanitized via bleach, HTML-escaped on output
 - **javascript: URLs are rejected** at the normalization layer
 - **Parameterized queries only** — no string interpolation into SQL
+
+## Key Features
+
+- **Standby agents**: background watchers that evaluate semantic conditions against shipments, configurable via the CLI and a long-running worker (`python -m app.cli.commands standby_worker`). See [dockie-copilot/app/application/standby_services.py](dockie-copilot/app/application/standby_services.py) and CLI helpers in [dockie-copilot/app/cli/commands.py](dockie-copilot/app/cli/commands.py).
+
+- **Simulated web search (FakeWeb)**: a remote-first fake web corpus used by the `web_search` and `search_supporting_context` tools to provide narrative context without depending on third-party search APIs. See [dockie-copilot/app/infrastructure/fake_web.py](dockie-copilot/app/infrastructure/fake_web.py) and the agent tooling in [dockie-copilot/app/application/agent_tools.py](dockie-copilot/app/application/agent_tools.py).
+
+- **Agent runtime (Google ADK + AG-UI)**: the agent runtime is implemented using Google ADK and exposed via AG-UI-compatible streaming routes. See [dockie-copilot/app/application/adk_agent.py](dockie-copilot/app/application/adk_agent.py).
+
+- **Structured agent tools**: list_shipments, get_shipment_status, get_shipment_history, search_supporting_context (parallel KB + web), web_search, ETA and demurrage helpers, PostGIS geospatial tools, and more. Tool implementations live in [dockie-copilot/app/application/agent_tools.py](dockie-copilot/app/application/agent_tools.py).
+
+- **Standby digests & notifications**: standby agents can enqueue digest items and trigger email notifications. By default the project uses a Supabase Edge Function pattern for sending standby emails (see [dockie-copilot/app/infrastructure/email.py](dockie-copilot/app/infrastructure/email.py)); ADK-hosted integration connectors are left as TODOs.
+
+- **Geospatial & caching**: PostGIS-powered spatial queries and Redis-backed caching with single-flight rebuild locking for expensive shipment-status calculations.
+
+## Project definition — what we implemented
+
+- **Satisfied**:
+  - **Python backend (FastAPI)**: implemented under [dockie-copilot/app](dockie-copilot/app).
+  - **Postgres + PostGIS**: Docker Compose + migrations are provided (see [dockie-copilot/alembic](dockie-copilot/alembic) and `docker-compose.yml`).
+  - **Agent runtime (Google ADK) + AG-UI**: implemented (see [dockie-copilot/app/application/adk_agent.py](dockie-copilot/app/application/adk_agent.py) and agent tools).
+  - **Frontend features**: shipment list, multi-shipment switching, chat UI, voice input and spoken playback, and map cards (see [frontend/src/components/ChatPanel.tsx](frontend/src/components/ChatPanel.tsx)).
+  - **Structured retrieval & tools**: `search_supporting_context` and `web_search` (fake-web) implemented and audited.
+
+- **Partially implemented / Not used**:
+  - **Google ADK integrations (catalog connectors)** such as ADK-hosted email/reminder connectors were NOT integrated in this submission. The code uses a Supabase Edge Function for standby emails instead ([dockie-copilot/app/infrastructure/email.py](dockie-copilot/app/infrastructure/email.py)). These ADK integrations are documented as TODOs and straightforward to wire in as next steps.
+  - **Full agent-emitted AG-UI structured card state**: the frontend currently uses UI-side heuristics to render rich cards; moving card emission to explicit agent-directed AG-UI state is a planned improvement.
+
+## Where to look
+
+- Agent runtime & tools: [dockie-copilot/app/application/adk_agent.py](dockie-copilot/app/application/adk_agent.py), [dockie-copilot/app/application/agent_tools.py](dockie-copilot/app/application/agent_tools.py)
+- Standby agents & CLI: [dockie-copilot/app/application/standby_services.py](dockie-copilot/app/application/standby_services.py), [dockie-copilot/app/cli/commands.py](dockie-copilot/app/cli/commands.py)
+- Fake web search: [dockie-copilot/app/infrastructure/fake_web.py](dockie-copilot/app/infrastructure/fake_web.py)
+- Email (standby digests): [dockie-copilot/app/infrastructure/email.py](dockie-copilot/app/infrastructure/email.py)
+
+---
+
+If you'd like, I can add repository TODOs for ADK integration wiring, or draft an example ADK integration for email reminders.
+
+## Scenario & standby-agent testing
+
+Useful commands for exercising standby agents and quick scenario-driven tests. These complement the existing CLI examples above — do not repeat `alembic upgrade head`, `ingest`, or `uvicorn` which are documented earlier.
+
+Reset the database schema and ensure PostGIS (and pgvector if available) are installed:
+
+```bash
+python - <<'PY'
+import psycopg2
+conn = psycopg2.connect("postgresql://postgres:jambrothers@localhost:5432/dockie_copilot")
+conn.autocommit = True
+cur = conn.cursor()
+cur.execute("DROP SCHEMA IF EXISTS public CASCADE;")
+cur.execute("CREATE SCHEMA public;")
+cur.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
+cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")  # only if pgvector is installed
+cur.close()
+conn.close()
+print("database schema reset")
+PY
+```
+
+Create a standby watcher (example):
+
+```bash
+python -m app.cli.commands create_standby_agent \
+  "When this shipment reaches anchorage, send me an email." \
+  email \
+  ship-004 \
+  30 \
+  test-user \
+  test@example.com
+
+# Note: the command prints the created agent id — use it below as <agent_id>
+```
+
+Run a scenario-driven eval flow (example for `ship-004`):
+
+```bash
+# apply an 'underway' scenario
+python -m app.cli.commands apply_scenario scenario_ship_004_underway
+
+# force one evaluation for your agent (replace <agent_id>)
+python -m app.cli.commands run_standby_agent <agent_id> test-user
+
+# apply an 'anchor arrived' scenario and re-run the agent
+python -m app.cli.commands apply_scenario scenario_ship_004_anchor_arrival
+python -m app.cli.commands run_standby_agent <agent_id> test-user
+```
+
+Freshness-warning example (ship-007):
+
+```bash
+python -m app.cli.commands create_standby_agent \
+  "When this shipment shows a freshness warning, send me an email." \
+  email \
+  ship-007 \
+  30 \
+  test-user \
+  test@example.com
+
+python -m app.cli.commands run_standby_agent <agent_id> test-user
+python -m app.cli.commands apply_scenario scenario_stale_position_feed
+python -m app.cli.commands run_standby_agent <agent_id> test-user
+
+# Inspect run history and notifications
+python -m app.cli.commands list_standby_runs <agent_id>
+python -m app.cli.commands list_notifications test-user
+```
+
+These commands are intended for local investigation and smoke-testing of standby logic, digest generation, and notification output flows. If you'd like, I can add a short `tools/` script to automate these sequences and capture the created agent ids for scripted runs.
+
+## Run the standby worker container (Docker)
+
+To run the long-running standby worker as a separate container (the frontend's standby UI assumes a background worker is evaluating agents), use the dedicated compose service `standby-worker`.
+
+```bash
+# Start the standby worker in the background
+docker compose up -d standby-worker
+
+# Rebuild then start the standby worker
+docker compose up --build -d standby-worker
+
+# Follow worker logs
+docker compose logs -f standby-worker
+
+# Stop the worker
+docker compose stop standby-worker
+```
+
+The `standby-worker` service runs `alembic upgrade head` then `python -m app.cli.commands standby_worker` as defined in `docker-compose.yml`. Use the logs and the one-off CLI commands in the Scenario section above to verify behavior or run a single evaluation cycle.
+
+## Known issues, load-test findings & hardening
+
+Summary of high-priority problems discovered during code review and checklist verification (see [notes/claude_analysis.txt](notes/claude_analysis.txt#L1-L182)) and where to look to fix them.
+
+- **Session state is in-memory by default**: ADK session storage defaults to in-memory which breaks when running multiple backend processes. Fix: set `ADK_SESSION_BACKEND=redis` and provide `REDIS_URL` (Upstash or local) so the `RedisSessionService` is used. See [app/application/adk_agent.py](app/application/adk_agent.py) and the `ADK_SESSION_BACKEND` setting in [app/core/config.py](app/core/config.py).
+
+- **Cache is effectively disabled in local envs**: `CACHE_ENABLED=true` with no `REDIS_URL` selects the null cache backend. Enable Redis in `.env` to activate caching and single-flight stampede protection. See [app/infrastructure/cache.py](app/infrastructure/cache.py) and `CACHE_*` settings in [app/core/config.py](app/core/config.py).
+
+- **Front-end bootstrap fan-out**: the initial page load performs multiple parallel calls (shipments, source-health, bundle, threads) which can saturate the backend. The app exposes `/app-bootstrap` to collapse these calls; prefer that endpoint for first-load. See [frontend/src/lib/api.ts](frontend/src/lib/api.ts) and [app/application/services.py](app/application/services.py).
+
+- **Duplicate and eager data fetching**: several endpoints reload the same shipment and eagerly load `evidence_items` for list views. Change `ShipmentRepository.get_all()` to return summary rows or add a lightweight `get_shipments_summary()` call to avoid over-fetching during list renders. See [app/infrastructure/repositories/shipment_repo.py](app/infrastructure/repositories/shipment_repo.py).
+
+- **Knowledge search is expensive / double-called**: the frontend calls knowledge search twice per chat turn and the backend ranks many artifacts in Python. Remove the double-call on the UI and consider lightweight pre-filtering, caching, or synonym expansion to reduce CPU. Key files: [frontend/src/components/ChatPanel.tsx](frontend/src/components/ChatPanel.tsx) and [app/application/services.py](app/application/services.py).
+
+- **Chat streaming causes frequent re-renders**: the UI updates assistant deltas very frequently causing layout thrash. Throttle streaming updates or batch DOM updates in `ChatPanel.tsx` to improve main-thread performance.
+
+- **Missing indexes on position tables**: add indexes on `positions.mmsi`, `positions.imo`, and `positions.observed_at` to speed history queries and prevent table scans. See [app/models/orm.py](app/models/orm.py).
+
+- **Map & list scaling**: the frontend renders full lists and recreates maps per card; add pagination/virtualization and reuse map instances. See [frontend/src/components/ShipmentList.tsx](frontend/src/components/ShipmentList.tsx) and [frontend/src/components/ShipmentMap.tsx](frontend/src/components/ShipmentMap.tsx).
+
+### Verified fixes in this repo
+
+Per the implementation checklist, the repo already contains a number of hardening and UX fixes (review `notes/claude_analysis.txt` for the full checklist). Notable items implemented:
+
+- Redis-backed ADK session service and fallback behavior to in-memory sessions when Redis is unavailable.
+- Cache single-flight / stampede protection wiring for expensive shipment-status rebuilds.
+- Reduced frontend bootstrap fan-out by using a consolidated `/app-bootstrap` payload.
+- Avoided eager-loading heavy evidence in list endpoints and added lighter summary endpoints.
+- Improved standby-agent deletion cleanup and added digest/email plumbing (Supabase Edge Function pattern by default).
+- Added segmented thick map lines, event stamps, and multi-shipment overlays in the tracking map.
+- Hardened the streaming failure path so failed runs return a friendly assistant message instead of leaving empty placeholders.
+
+### Remaining recommended next steps (short list)
+
+1. Switch ADK session backend to Redis in staging and production (`ADK_SESSION_BACKEND=redis`, provide `REDIS_URL`) and verify session restore across multiple workers.
+2. Add database indexes for `positions` access patterns and verify with a simple explain plan on large datasets.
+3. Add a short-lived lock for cache-miss rebuilds where Redis is enabled (SETNX-based single-flight) and increase DB pool for API vs worker processes.
+4. Remove double knowledge-search from the frontend; consider a backend-side prefetch that returns both knowledge and supporting context in one call.
+5. Add a small k6/wrk/hey load-test harness under `tools/loadtest/` (I can add this for you).
+
+### Quick verification & load-test commands
+
+Run the usual local setup, then run these checks:
+
+```bash
+# Start services
+cp .env.example .env
+# configure REDIS_URL and ADK_SESSION_BACKEND in .env for Redis-backed sessions
+docker compose up --build
+
+# Migrate + ingest
+docker compose exec app alembic upgrade head
+docker compose exec app python -m app.cli.commands ingest
+
+# Run a single standby evaluation (light-weight check)
+docker compose exec app python -m app.cli.commands standby_worker_once
+
+# Run an embedding backfill smoke test (if keys present)
+docker compose exec app python -m app.cli.commands embed_backfill 1
+
+# Run unit tests
+docker compose exec app pytest tests/ -q
+```
+
+Suggested quick load test (install `wrk` or `hey` locally):
+
+```bash
+# simple concurrent GET load against list endpoint
+wrk -t4 -c100 -d30s http://localhost:8000/shipments
+
+# stress agent-run (non-streaming POST synthetic payload) via a short wrk script or k6 scenario
+# Example (k6): write a small script that POSTs to /agent/run with a minimal RunAgentInput and run:
+k6 run --vus 50 --duration 30s tools/loadtest/agent_run.js
+```
+
+If you want, I can add `tools/loadtest/agent_run.js` and a `Makefile` target to run these quickly.

@@ -1,18 +1,51 @@
 {
-  "positions": [
-    {
-      "source": "simulated_refresh",
-      "observed_at": "2026-04-01T08:10:00Z",
-      "mmsi": "357123000",
-      "imo": "9935040",
-      "vessel_name": "GREAT ABIDJAN",
-      "latitude": 6.43,
-      "longitude": 3.39,
-      "sog_knots": 0.1,
-      "cog_degrees": 0.0,
-      "heading_degrees": 0,
-      "navigation_status": "at_anchor",
-      "destination_text": "LAGOS"
-    }
-  ]
+	"positions": [
+		{
+			"source": "simulated_refresh",
+			"observed_at": "2026-04-01T08:10:00Z",
+			"mmsi": "357123000",
+			"imo": "9935040",
+			"vessel_name": "GREAT ABIDJAN",
+			"latitude": 6.43,
+			"longitude": 3.39,
+			"sog_knots": 0.1,
+			"cog_degrees": 0,
+			"heading_degrees": 0,
+			"navigation_status": "at_anchor",
+			"destination_text": "LAGOS"
+		}
+	],
+	"Transform": "AWS::Serverless-2016-10-31",
+	"Resources": {
+		"Api": {
+			"Type": "AWS::Serverless::Api",
+			"Properties": {
+				"Name": {
+					"Fn::Sub": [
+						"${ResourceName} From Stack ${AWS::StackName}",
+						{
+							"ResourceName": "Api"
+						}
+					]
+				},
+				"StageName": "Prod",
+				"DefinitionBody": {
+					"openapi": "3.0",
+					"info": {},
+					"paths": {
+						"/": {
+							"get": {
+								"responses": {}
+							}
+						}
+					}
+				},
+				"EndpointConfiguration": "REGIONAL",
+				"TracingEnabled": true
+			}
+		},
+		"UserPoolClient": {
+			"Type": "AWS::Cognito::UserPoolClient"
+		}
+	}
 }

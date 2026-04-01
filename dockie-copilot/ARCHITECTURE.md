@@ -164,3 +164,61 @@ AI tools helped accelerate implementation and iteration, especially around scaff
 - UI/backend integration
 
 The goal throughout was not just to ship a demo, but to keep the behavior inspectable, grounded, and honest about uncertainty.
+
+## Project-definition mapping
+
+- **Standby agents**: Implemented — background watcher service and evaluation/dispatch pipeline are implemented in [dockie-copilot/app/application/standby_services.py](dockie-copilot/app/application/standby_services.py). CLI helpers and a worker loop (`standby_worker`) are available in [dockie-copilot/app/cli/commands.py](dockie-copilot/app/cli/commands.py).
+
+- **Simulated web search**: Implemented — `FakeWebClient` provides remote-first simulated web search and is used by `web_search` and `search_supporting_context` tools. See [dockie-copilot/app/infrastructure/fake_web.py](dockie-copilot/app/infrastructure/fake_web.py).
+
+- **Google ADK & AG-UI**: The ADK is used as the agent runtime (`app/application/adk_agent.py`) and the system exposes AG-UI-compatible streaming endpoints consumed by the frontend. However, ADK *integrations* (catalog connectors such as pre-built email connectors) were not integrated in this submission — standby emails use a Supabase Edge Function pattern instead ([dockie-copilot/app/infrastructure/email.py](dockie-copilot/app/infrastructure/email.py)).
+
+- **Frontend requirements**: The sibling frontend implements shipment list, multi-shipment switching, chat streaming, voice input/playback, and map cards (see [frontend/src/components/ChatPanel.tsx](frontend/src/components/ChatPanel.tsx)).
+
+## Missing / Next Steps
+
+- Wire ADK integration connectors (email reminders, calendar, other third-party actions) using the Google ADK integrations catalog.
+- Move rich chat cards to explicit, agent-emitted AG-UI structured state (currently the UI uses heuristics to decide when to show cards).
+- Add more end-to-end tests around standby agents, digest generation, and secure UI rendering.
+
+This explicit mapping is intended to make the trade-offs visible in the ARCHITECTURE explanation and to guide next work if you want me to implement any of the remaining pieces.
+
+## Hardening & load-test findings
+
+This section summarises the most important load, scaling, and reliability findings discovered during the checklist review and code analysis (see [notes/claude_analysis.txt](notes/claude_analysis.txt#L1-L182)). Use this as a short runbook for hardening and verification.
+
+High-priority items
+
+- **Session consistency across workers**: ADK session storage defaults to in-memory in dev, which causes split conversations and missing history when using multiple backend processes. Short-term mitigation: set `ADK_SESSION_BACKEND=redis` and configure `REDIS_URL`. See `app/application/adk_agent.py` for the session service builder.
+
+- **Cache disabled by default**: local/dev .env may leave `REDIS_URL` unset, resulting in the null cache backend and cache stampedes on expiry. Enable Redis in staging and production to activate single-flight protections (see `app/infrastructure/cache.py`).
+
+- **API fan-out on first load**: the frontend bootstraps many endpoints in parallel (list, source-health, bundle, threads). Prefer a single `/app-bootstrap` endpoint to reduce concurrent load during first-page view.
+
+- **Expensive knowledge search**: `KnowledgeBaseService.search()` scans many artifact tables and ranks client-side; the UI also calls it twice per chat turn. Remove the duplicate call and consider caching or synonym expansion to reduce CPU and DB queries.
+
+- **DB indexes**: add indexes on `positions.mmsi`, `positions.imo`, and `positions.observed_at` to avoid scans and speed history queries.
+
+Medium-priority items
+
+- **Frontend render & streaming throttling**: throttle streaming deltas to avoid re-render storms and smooth scroll updates.
+- **Shipment list/map scaling**: add pagination/virtualization and reuse Leaflet instances rather than re-creating maps per card.
+
+What has been implemented (checklist highlights)
+
+- Redis-backed ADK session service + graceful in-memory fallback.
+- Cache single-flight protection for expensive shipment status builds when Redis is present.
+- Consolidated first-load bootstrap (`/app-bootstrap`) to reduce frontend fan-out.
+- Reduced eager-loading of heavy evidence collections for list endpoints.
+- Standby-agent deletion cleanup and digest/email support (Supabase Edge Function by default).
+- Map improvements (segmented lines, thicker tracks, event stamps) and streaming failure hardening.
+
+Outstanding / recommended next work
+
+1. Enable Redis-backed sessions in staging and production and validate across multiple backend workers.
+2. Add the proposed DB indexes and run explain plans against representative datasets.
+3. Add a small load-test harness (`tools/loadtest/`) and run targeted scenarios against `/agent/run`, `/shipments`, and `/app-bootstrap`.
+4. Replace double-knowledge search in the UI and implement backend-side prefetching where appropriate.
+5. Add tests for parallel tool execution, partial failures, and final answer synthesis correctness under concurrent tool responses.
+
+If you'd like, I can open PRs to add the load-test harness and the migration to add the `positions` indexes, or I can implement Redis session onboarding and a short verification checklist.
