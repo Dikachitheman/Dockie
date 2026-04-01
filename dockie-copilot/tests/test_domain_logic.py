@@ -50,10 +50,10 @@ class TestFreshness:
         result = compute_freshness(obs, stale_after_seconds=3600)
         assert result == FreshnessLevel.STALE
 
-    def test_future_timestamp_is_unknown(self):
+    def test_future_timestamp_is_fresh(self):
         obs = _utc(hours=+1)
         result = compute_freshness(obs, stale_after_seconds=3600)
-        assert result == FreshnessLevel.UNKNOWN
+        assert result == FreshnessLevel.FRESH
 
     def test_is_stale_true(self):
         obs = _utc(hours=-5)

@@ -38,8 +38,8 @@ def compute_freshness(
     age_seconds = (now - observed_at).total_seconds()
 
     if age_seconds < 0:
-        # Future timestamp — treat as unknown; may be clock skew
-        return FreshnessLevel.UNKNOWN
+        # Future timestamp — treat as fresh (within acceptable clock skew / pre-dated AIS)
+        return FreshnessLevel.FRESH
 
     half = stale_after_seconds / 2
     if age_seconds <= half:

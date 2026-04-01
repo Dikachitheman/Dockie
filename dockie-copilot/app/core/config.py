@@ -88,7 +88,7 @@ class Settings(BaseSettings):
     supabase_jwks_url: str | None = None  # e.g. https://<project>.supabase.co/auth/v1/.well-known/jwks.json
 
     # Staleness thresholds (seconds)
-    position_stale_after_seconds: int = 3600        # 1 hour
+    position_stale_after_seconds: int = 172800       # 2 days
     schedule_stale_after_seconds: int = 604800      # 7 days
 
     # Fixture paths

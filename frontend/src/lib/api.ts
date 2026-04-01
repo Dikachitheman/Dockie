@@ -366,6 +366,7 @@ export type UiChatMessage = {
   webSearchResults?: WebSearchResult[];
   webSearchNotice?: string | null;
   responseMode?: "concise" | "balanced" | "verbose";
+  isError?: boolean;
 };
 
 export type AppBootstrapPayload = {
@@ -425,6 +426,18 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers,
   });
+
+  if (response.status === 401) {
+    // Token may be stale (e.g. expired before autoRefreshToken completed on first load).
+    // Force a refresh and retry once.
+    await supabase.auth.refreshSession();
+    const retryHeaders = await buildApiHeaders(init?.headers);
+    const retryResponse = await fetch(withBase(path), { ...init, headers: retryHeaders });
+    if (!retryResponse.ok) {
+      throw new Error(`Request failed (${retryResponse.status}) for ${path}`);
+    }
+    return retryResponse.json() as Promise<T>;
+  }
 
   if (!response.ok) {
     throw new Error(`Request failed (${response.status}) for ${path}`);

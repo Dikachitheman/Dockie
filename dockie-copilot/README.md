@@ -296,6 +296,48 @@ python -m app.cli.commands list_standby_runs <agent_id>
 python -m app.cli.commands list_notifications test-user
 ```
 
+### Test using a running standby worker (no forced run)
+
+Instead of calling `run_standby_agent` to force a single evaluation, you can run the background worker and let it pick up agents on its normal schedule. This is closer to real production behavior and exercises cooldowns, digest batching, and notification plumbing.
+
+1. Create the standby agent using the `create_standby_agent` command shown above and note the printed `<agent_id>`.
+
+2. Start the background worker (option A uses the dedicated compose service):
+
+```bash
+# Option A — dedicated worker container
+docker compose up -d standby-worker
+
+# Option B — run the worker inside the app container (foreground)
+docker compose exec app python -m app.cli.commands standby_worker
+
+# Option C — run a single-pass evaluation from the app container
+docker compose exec app python -m app.cli.commands standby_worker_once
+```
+
+3. Apply the test scenario that triggers the condition (example):
+
+```bash
+python -m app.cli.commands apply_scenario scenario_ship_004_anchor_arrival
+```
+
+4. Wait up to `STANDBY_WORKER_POLL_SECONDS` (default 10s) for the worker to process due agents, or follow the worker logs to see activity:
+
+```bash
+docker compose logs -f standby-worker
+```
+
+5. Verify the agent ran and any notifications/outputs were produced:
+
+```bash
+python -m app.cli.commands list_standby_runs <agent_id>
+python -m app.cli.commands list_notifications test-user
+```
+
+Tips:
+- To speed tests, temporarily lower `STANDBY_WORKER_POLL_SECONDS` in `.env` (e.g. `5`) before starting the worker.
+- Use `standby_worker_once` for reproducible single-pass checks in CI or scripted runs.
+
 These commands are intended for local investigation and smoke-testing of standby logic, digest generation, and notification output flows. If you'd like, I can add a short `tools/` script to automate these sequences and capture the created agent ids for scripted runs.
 
 ## Run the standby worker container (Docker)

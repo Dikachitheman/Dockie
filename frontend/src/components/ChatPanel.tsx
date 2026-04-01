@@ -1763,6 +1763,7 @@ export default function ChatPanel({
   const [streamEvents, setStreamEvents] = useState<StreamEventItem[]>([]);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [hasStreamingText, setHasStreamingText] = useState(false);
+  const [streamNotification, setStreamNotification] = useState<{ message: string; kind: "retrying" | "error" } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const latestMessagesRef = useRef<ChatMessage[]>(messages);
@@ -2147,33 +2148,72 @@ export default function ChatPanel({
     setStreamingMessageId(assistantMessageId);
 
     try {
-      await runAgentStream({
-        threadId,
-        prompt: buildAgentPrompt(shipment, text, isVoiceMode || isVoice, responseMode),
-        state: {
-          selected_shipment_id: shipment.shipmentId,
-          response_mode: responseMode,
-          ...repeatedIntentState,
-        },
-        onEvent: handleAgentEvent,
-        onAssistantDelta: (delta, messageId) => {
-          if (messageId && messageId !== streamMessageIdRef.current) {
-            const previousId = streamMessageIdRef.current;
-            streamMessageIdRef.current = messageId;
-            setStreamingMessageId(messageId);
-            if (previousId) {
-              commitMessages(
-                latestMessagesRef.current.map((message) =>
-                  message.id === previousId ? { ...message, id: messageId } : message,
-                ),
-              );
-            }
-          }
+      const RETRYABLE_CODES = new Set(["MODEL_UNAVAILABLE", "RATE_LIMITED", "OVERLOADED", "TOO_MANY_REQUESTS", "RATE_LIMIT_EXCEEDED"]);
+      let attempts = 0;
+      let streamError: unknown = null;
 
-          streamTargetRef.current += delta;
-          ensureRevealLoop();
-        },
-      });
+      while (attempts <= 2) {
+        try {
+          await runAgentStream({
+            threadId,
+            prompt: buildAgentPrompt(shipment, text, isVoiceMode || isVoice, responseMode),
+            state: {
+              selected_shipment_id: shipment.shipmentId,
+              response_mode: responseMode,
+              ...repeatedIntentState,
+            },
+            onEvent: handleAgentEvent,
+            onAssistantDelta: (delta, messageId) => {
+              if (messageId && messageId !== streamMessageIdRef.current) {
+                const previousId = streamMessageIdRef.current;
+                streamMessageIdRef.current = messageId;
+                setStreamingMessageId(messageId);
+                if (previousId) {
+                  commitMessages(
+                    latestMessagesRef.current.map((message) =>
+                      message.id === previousId ? { ...message, id: messageId } : message,
+                    ),
+                  );
+                }
+              }
+              streamTargetRef.current += delta;
+              ensureRevealLoop();
+            },
+          });
+          streamError = null;
+          break;
+        } catch (err) {
+          const code = err instanceof AgentRunError ? (err.code ?? "") : "";
+          if (code === "QUOTA_EXHAUSTED") {
+            setStreamNotification({ message: "Quota exhausted — please check your API usage.", kind: "error" });
+            streamError = err;
+            break;
+          }
+          if (RETRYABLE_CODES.has(code) && attempts < 2) {
+            attempts++;
+            setStreamNotification({ message: `Model overloaded — retrying (${attempts}/2)…`, kind: "retrying" });
+            await new Promise((resolve) => window.setTimeout(resolve, 3000));
+            const currentMsgId = streamMessageIdRef.current ?? assistantMessageId;
+            streamTargetRef.current = "";
+            streamDisplayedRef.current = "";
+            streamMessageIdRef.current = null;
+            setStreamingMessageId(assistantMessageId);
+            setStreamEvents([]);
+            setStreamStatus(null);
+            setHasStreamingText(false);
+            commitMessages(
+              latestMessagesRef.current.map((message) =>
+                message.id === currentMsgId ? { ...message, content: "", id: assistantMessageId } : message,
+              ),
+            );
+            continue;
+          }
+          streamError = err;
+          break;
+        }
+      }
+
+      if (streamError) throw streamError;
 
       await flushStreamContent();
       if (!knowledgeSearchUsedRef.current) {
@@ -2227,16 +2267,19 @@ export default function ChatPanel({
         recordedAt: Date.now(),
       };
     } catch (error) {
-      const errorText = error instanceof Error ? error.message : "Agent request failed";
-      const userFacingError = error instanceof AgentRunError && error.code === "MODEL_UNAVAILABLE"
-        ? "The model is temporarily overloaded right now. Please try again in a moment."
-        : errorText;
+      const code = error instanceof AgentRunError ? (error.code ?? "") : "";
+      const userFacingError =
+        code === "MODEL_UNAVAILABLE" || code === "RATE_LIMITED"
+          ? "The model is receiving too many requests right now. Please try again in a moment."
+          : code === "QUOTA_EXHAUSTED"
+          ? "API quota exhausted. Please check your plan and billing details."
+          : "The shipment agent could not complete this request. Please try again.";
       streamTargetRef.current = "";
       streamDisplayedRef.current = "";
       commitMessages(
         latestMessagesRef.current.map((message) =>
           message.id === (streamMessageIdRef.current ?? assistantMessageId)
-            ? { ...message, content: `I could not reach the shipment agent just now. ${userFacingError}` }
+            ? { ...message, content: userFacingError, isError: true }
             : message,
         ),
       );
@@ -2250,6 +2293,7 @@ export default function ChatPanel({
       setToolProgress([]);
       setStreamEvents([]);
       setHasStreamingText(false);
+      setStreamNotification(null);
       webSearchUsedRef.current = false;
       knowledgeSearchUsedRef.current = false;
       turnFetchKeysRef.current.clear();
@@ -2412,6 +2456,21 @@ export default function ChatPanel({
                     hasText={hasStreamingText}
                   />
                 )}
+                {message.role === "assistant" && isStreamingMessage && streamNotification && (
+                  <div className="mb-2 flex justify-start">
+                    <div
+                      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-[12px] ${
+                        streamNotification.kind === "retrying"
+                          ? "bg-amber-50 text-amber-700"
+                          : "bg-red-50 text-red-700"
+                      }`}
+                      style={{ animation: "fade-in 0.25s ease both" }}
+                    >
+                      <span>{streamNotification.kind === "retrying" ? "⏳" : "⚠️"}</span>
+                      <span>{streamNotification.message}</span>
+                    </div>
+                  </div>
+                )}
                 <div className={`mb-5 flex animate-fade-in ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className="max-w-[75%] space-y-2">
                     {message.content && (
@@ -2421,7 +2480,7 @@ export default function ChatPanel({
                         {renderedContent}
                       </div>
                     )}
-                    {message.role === "assistant" && message.content && !isStreamingMessage && (
+                    {message.role === "assistant" && message.content && !isStreamingMessage && !message.isError && (
                       <div className="space-y-3">
                         {index === messages.length - 1 && latestShipmentNotification && latestShipmentNotification.unread && (
                           <div className="animate-fade-in" style={{ animationDelay: "0ms" }}>

@@ -48,6 +48,23 @@ def _classify_run_error(exc: Exception) -> tuple[str, str]:
             "MODEL_UNAVAILABLE",
             "The model is temporarily overloaded right now. Please try again in a moment.",
         )
+    if (
+        "429" in lower
+        or "resource_exhausted" in lower
+        or "too many requests" in lower
+        or "rate limit" in lower
+        or "rate_limit" in lower
+    ):
+        # Distinguish daily/monthly quota exhaustion from per-minute rate limits.
+        if "quota" in lower or "per day" in lower or "free tier" in lower:
+            return (
+                "QUOTA_EXHAUSTED",
+                "You have exceeded your API quota. Please check your plan and billing details.",
+            )
+        return (
+            "RATE_LIMITED",
+            "The model is receiving too many requests right now. Please try again in a moment.",
+        )
     return ("AGENT_ERROR", f"Agent execution failed: {exc}")
 
 
