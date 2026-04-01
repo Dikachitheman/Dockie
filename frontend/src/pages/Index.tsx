@@ -384,6 +384,37 @@ const Index = ({ user }: { user?: User }) => {
   const handleCreateStandbyAgent = useCallback(async (draft: StandbyAgentDraft) => {
     const created = await createStandbyAgent(draft);
     setStandbyAgents((current) => [created, ...current]);
+    const shipId = draft.shipmentId ?? null;
+    if (shipId) {
+      const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      setMessagesByShipment((current) => {
+        const existing = current[shipId] ?? [];
+        return {
+          ...current,
+          [shipId]: [
+            ...existing,
+            {
+              id: `watcher-prompt-${created.id}`,
+              role: "user" as const,
+              content: draft.conditionText,
+              timestamp,
+            },
+            {
+              id: `watcher-active-${created.id}`,
+              role: "assistant" as const,
+              content: "",
+              timestamp,
+              agentWatcher: {
+                agentId: created.id,
+                conditionText: draft.conditionText,
+                action: draft.action,
+                intervalSeconds: draft.intervalSeconds,
+              },
+            },
+          ],
+        };
+      });
+    }
     await refreshStandbyData();
   }, [refreshStandbyData]);
 

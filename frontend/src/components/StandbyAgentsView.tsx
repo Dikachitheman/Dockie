@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Bot, FileSpreadsheet, FileText, Mail, Plus, Radio, Sparkles, Table2, Zap } from "lucide-react";
+import { BookOpen, Bot, FileText, Mail, Plus, Radio, Sparkles, Table2, Zap } from "lucide-react";
 import {
   type AgentOutput,
   createStandbyAgentDraft,
@@ -131,8 +131,8 @@ export default function StandbyAgentsView({
             {([
               { panel: "email" as const, label: "Email", sub: "Drafted updates", icon: Mail },
               { panel: "report" as const, label: "Reports", sub: "Generated reports", icon: FileText },
-              { panel: "spreadsheet" as const, label: "Spreadsheets", sub: "Data exports", icon: FileSpreadsheet },
-              { panel: "document" as const, label: "Documents", sub: "Drafted docs", icon: FileText },
+              { panel: "spreadsheet" as const, label: "Spreadsheets", sub: "Data exports", icon: Table2 },
+              { panel: "document" as const, label: "Documents", sub: "Drafted docs", icon: BookOpen },
             ]).map(({ panel, label, sub, icon: Icon }) => {
               const count = outputs.filter((o) => o.outputType === panel).length;
               return (
@@ -359,11 +359,11 @@ export default function StandbyAgentsView({
               ) : (
                 filteredOutputs.map((output) => {
                   const typeConfig = {
-                    report: { icon: FileText, iconBg: "bg-[#eef6ff]", iconColor: "text-apple-blue", headerBg: "bg-[linear-gradient(135deg,#f0f7ff_0%,#e8f2ff_100%)]", accentText: "text-apple-blue", borderColor: "border-[#c8deff]" },
-                    spreadsheet: { icon: Table2, iconBg: "bg-[#edfaf3]", iconColor: "text-emerald-600", headerBg: "bg-[linear-gradient(135deg,#f0fdf6_0%,#e6fbf0_100%)]", accentText: "text-emerald-600", borderColor: "border-[#b8f0d4]" },
-                    document: { icon: FileText, iconBg: "bg-[#f3eeff]", iconColor: "text-violet-600", headerBg: "bg-[linear-gradient(135deg,#f8f4ff_0%,#f0eaff_100%)]", accentText: "text-violet-600", borderColor: "border-[#d8c8ff]" },
-                    email: { icon: Mail, iconBg: "bg-[#fff4ec]", iconColor: "text-orange-500", headerBg: "bg-[linear-gradient(135deg,#fff8f3_0%,#fff0e6_100%)]", accentText: "text-orange-500", borderColor: "border-[#ffd6b8]" },
-                  }[output.outputType as string] ?? { icon: FileText, iconBg: "bg-apple-surface", iconColor: "text-apple-secondary", headerBg: "bg-apple-surface", accentText: "text-apple-secondary", borderColor: "border-apple-divider" };
+                    report:      { icon: FileText,  iconBg: "bg-[#eef6ff]", iconColor: "text-apple-blue",      headerBg: "bg-[#f5f8fc]", accentText: "text-apple-blue",      borderColor: "border-[#d0dff5]" },
+                    spreadsheet: { icon: Table2,    iconBg: "bg-[#f5f5f7]", iconColor: "text-[#3c3c43]",       headerBg: "bg-[#f5f5f7]", accentText: "text-[#3c3c43]",       borderColor: "border-[#d2d2d7]" },
+                    document:    { icon: BookOpen,  iconBg: "bg-[#f5f5f7]", iconColor: "text-apple-secondary", headerBg: "bg-[#f5f5f7]", accentText: "text-apple-secondary", borderColor: "border-[#d2d2d7]" },
+                    email:       { icon: Mail,      iconBg: "bg-[#fff4ec]", iconColor: "text-orange-500",      headerBg: "bg-[#fff8f3]", accentText: "text-orange-500",      borderColor: "border-[#ffd6b8]" },
+                  }[output.outputType as string] ?? { icon: FileText, iconBg: "bg-[#f5f5f7]", iconColor: "text-apple-secondary", headerBg: "bg-[#f5f5f7]", accentText: "text-apple-secondary", borderColor: "border-[#d2d2d7]" };
                   const TypeIcon = typeConfig.icon;
                   return (
                   <div key={output.id} className={`overflow-hidden rounded-[20px] border bg-white shadow-apple ${typeConfig.borderColor}`}>
@@ -396,23 +396,15 @@ export default function StandbyAgentsView({
                     {/* Content preview */}
                     <div className="px-6 py-5">
                       {output.outputType === "spreadsheet" ? (
-                        <div className={`overflow-x-auto rounded-[12px] border bg-apple-surface ${typeConfig.borderColor}`}>
+                        <div className="overflow-x-auto rounded-[12px] border border-[#d2d2d7] bg-[#f5f5f7]">
                           <pre className="line-clamp-5 whitespace-pre-wrap p-4 font-mono text-[12px] leading-relaxed text-apple-text">{output.content}</pre>
                         </div>
-                      ) : output.outputType === "report" ? (
-                        <div className="rounded-[12px] border border-[#c8deff] bg-[#f8fbff] p-4">
-                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
-                        </div>
                       ) : output.outputType === "document" ? (
-                        <div className="rounded-[12px] border border-[#d8c8ff] bg-[#faf8ff] p-4">
-                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
-                        </div>
-                      ) : output.outputType === "email" ? (
-                        <div className="rounded-[12px] border border-[#ffd6b8] bg-[#fffaf6] p-4">
-                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
+                        <div className="rounded-[12px] border border-[#d2d2d7] bg-white px-4 py-3" style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.04)" }}>
+                          <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-[1.7] text-apple-text">{output.content}</p>
                         </div>
                       ) : (
-                        <div className="rounded-[12px] bg-apple-surface p-4">
+                        <div className={`rounded-[12px] border ${typeConfig.borderColor} bg-[#fafcff] p-4`}>
                           <p className="line-clamp-4 whitespace-pre-wrap text-[13px] leading-relaxed text-apple-text">{output.content}</p>
                         </div>
                       )}

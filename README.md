@@ -245,60 +245,54 @@ cur.close()
 conn.close()
 print("database schema reset")
 PY
+
+alembic upgrade head
+python -m app.cli.commands ingest
+uvicorn app.main:app --reload
 ```
 
-Create a standby watcher (example):
+Create a standby watcher (CLI example):
 
-```bash
+The test flow
+
+#ship-004 (GREAT ACCRA → GHTEM/Tema, status: booked)
+
+Trigger: anchorage_status — FALSE when vessel is underway, TRUE when at anchor
+
+FALSE base state — vessel is underway approaching Tema, no anchor:
+
+
+python -m app.cli.commands apply_scenario scenario_ship_004_underway
+Create the agent (should NOT fire because vessel is underway):
+
+
 python -m app.cli.commands create_standby_agent \
-  "  send me an email." \
+  "Alert me when the vessel reaches anchorage at Tema." \
   email \
   ship-004 \
   30 \
   test-user \
-  test@example.com
+  dikachi.anosike@gmail.com
+Copy the agent id from the output.
 
-# Note: the command prints the created agent id — use it below as <agent_id>
-```
+First run — expect will_fire=False, condition_matched=False:
 
-Run a scenario-driven eval flow (example for `ship-004`):
 
-```bash
-# apply an 'underway' scenario
-python -m app.cli.commands apply_scenario scenario_ship_004_underway
+python -m app.cli.commands run_standby_agent <agent-id> test-user
+You'll see standby_agent_fire_decision log with will_fire=False.
 
-# force one evaluation for your agent (replace <agent_id>)
-python -m app.cli.commands run_standby_agent <agent_id> test-user
+Flip to TRUE state — vessel arrives at anchor:
 
-# apply an 'anchor arrived' scenario and re-run the agent
+
 python -m app.cli.commands apply_scenario scenario_ship_004_anchor_arrival
-python -m app.cli.commands run_standby_agent <agent_id> test-user
-```
+Second run — expect will_fire=True, agent fires:
 
-```bash
-python -m app.cli.commands create_standby_agent \
-  "When the ETA shifts or ETA confidence drops for this shipment, generate a document." \
-  document \
-  ship-007 \
-  30 \
-  test-user \
-  test@example.com
 
-python -m app.cli.commands run_standby_agent <agent_id> test-user
-```
-
-# Apply the updated scenario (injects the ETA revision + 7-day slip)
-python -m app.cli.commands apply_scenario scenario_stale_position_feed
-
-# Run the agent
-python -m app.cli.commands run_standby_agent <agent_id> test-user
-
-# Inspect run history and notifications
-python -m app.cli.commands list_standby_runs <agent_id>
-python -m app.cli.commands list_notifications test-user
-```
+python -m app.cli.commands run_standby_agent <agent-id> test-user
+You'll see standby_agent_fire_decision with will_fire=True and action_executed=email_queued.
 
 These commands are intended for local investigation and smoke-testing of standby logic, digest generation, and notification output flows. If you'd like, I can add a short `tools/` script to automate these sequences and capture the created agent ids for scripted runs.
+
 
 ## Run the standby worker container (Docker)
 
@@ -316,6 +310,43 @@ docker compose stop standby-worker
 ```
 
 To force a full re-ingest on top of existing rows, use `docker compose exec app python -m app.cli.commands ingest` (see CLI section).
+
+## Some useful commands to update Database state.
+
+Use apply_scenario when you want to change analytics cards/tables in a visible way. Use simulated_refresh when you want to change position/freshness/tracking-derived analytics.
+
+## What each command is used for
+
+### `python -m app.cli.commands refresh`
+Loads the base fixture dataset used for local development and testing.
+
+### `python -m app.cli.commands simulated_refresh run_001`
+Applies the first simulated position snapshot.
+
+### `python -m app.cli.commands simulated_refresh run_002`
+Applies the second simulated position snapshot.
+
+### `python -m app.cli.commands simulated_refresh run_003`
+Applies the third simulated position snapshot, including a newer anchored position update for a vessel.
+
+### `python -m app.cli.commands apply_scenario scenario_eta_delay`
+Simulates an ETA delay state.
+
+### `python -m app.cli.commands apply_scenario scenario_stale_position_feed`
+Simulates stale position data for freshness-warning testing.
+
+### `python -m app.cli.commands apply_scenario scenario_ship_004_anchor_arrival`
+Simulates a vessel arriving at anchorage so standby monitoring can detect a false-to-true transition.
+
+### `python -m app.cli.commands apply_scenario scenario_eta_slip`
+Simulates an ETA revision/slip for analytics and monitoring tests.
+
+### `python -m app.cli.commands apply_scenario scenario_clearance_not_ready`
+Sets `ship-001` into an incomplete customs/clearance state.
+
+### `python -m app.cli.commands apply_scenario scenario_demurrage_risk`
+Adds incomplete clearance for `ship-005` and a congestion spike at `NGLOS` to simulate demurrage risk.
+
 
 ## Known issues, load-test findings & hardening
 

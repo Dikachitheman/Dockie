@@ -1,0 +1,12 @@
+{
+  "port_congestion_readings": [
+    {
+      "port_locode": "NGLOS",
+      "delay_days": 0.5,
+      "queue_vessels": 2,
+      "source": "scenario_ship_007_demurrage_clear",
+      "detail": "Port conditions are calm. Minimal wait expected.",
+      "observed_at": "2026-04-01T18:00:00Z"
+    }
+  ]
+}

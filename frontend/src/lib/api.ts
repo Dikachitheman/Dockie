@@ -21,7 +21,7 @@ import type {
   WebSearchSourcePlan,
 } from "@/lib/shipment-ui";
 import { supabase } from "@/integrations/supabase/client";
-import type { AgentNotification, AgentOutput, StandbyAgent, StandbyAgentDraft } from "@/lib/standby-agents";
+import type { AgentNotification, AgentOutput, StandbyAgent, StandbyAgentDraft, StandbyAction } from "@/lib/standby-agents";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
@@ -362,6 +362,7 @@ export type UiChatMessage = {
   isVoice?: boolean;
   richComponents?: UiRichComponent[];
   agentOutputId?: string | null;
+  agentWatcher?: { agentId: string; conditionText: string; action: StandbyAction; intervalSeconds: number } | null;
   knowledgeSnippets?: KnowledgeSnippet[];
   webSearchResults?: WebSearchResult[];
   webSearchNotice?: string | null;

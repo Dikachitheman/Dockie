@@ -17,3 +17,5 @@ echo
 echo "Check shipments:"
 curl -sS http://localhost:8000/shipments
 echo
+
+# This file may be outdated, so we don't want to fail the script if the endpoint is not available.

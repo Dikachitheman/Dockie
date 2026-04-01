@@ -802,6 +802,38 @@ function TrendGraphCard({ shipment }: { shipment: Shipment }) {
   );
 }
 
+function WatcherActiveCard({
+  conditionText,
+  action,
+  intervalSeconds,
+}: {
+  conditionText: string;
+  action: StandbyAction;
+  intervalSeconds: number;
+}) {
+  return (
+    <div className="apple-card p-4" style={{ animation: "fade-in 0.3s ease both" }}>
+      <div className="flex items-center gap-2">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-green-100">
+          <Radar className="h-4 w-4 text-green-600" strokeWidth={1.5} />
+        </span>
+        <div>
+          <p className="text-sm font-semibold text-apple-text">Watcher active</p>
+          <p className="text-xs text-apple-secondary">Monitoring · checks every {formatStandbyInterval(intervalSeconds)}</p>
+        </div>
+        <span className="ml-auto flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-[11px] font-semibold text-green-700">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
+          Live
+        </span>
+      </div>
+      <p className="mt-3 rounded-xl bg-apple-surface px-3 py-2 text-sm text-apple-text">{conditionText}</p>
+      <p className="mt-2 text-xs text-apple-secondary">
+        When triggered: <span className="font-medium text-apple-text">{describeStandbyAction(action)}</span>. I'll post the result here in chat.
+      </p>
+    </div>
+  );
+}
+
 function InlineStandbyCreatorCard({
   shipment,
   messages,
@@ -2480,6 +2512,13 @@ export default function ChatPanel({
                         {message.isError && <span className="mr-1.5">⚠️</span>}
                         {renderedContent}
                       </div>
+                    )}
+                    {message.agentWatcher && !isStreamingMessage && (
+                      <WatcherActiveCard
+                        conditionText={message.agentWatcher.conditionText}
+                        action={message.agentWatcher.action}
+                        intervalSeconds={message.agentWatcher.intervalSeconds}
+                      />
                     )}
                     {message.role === "assistant" && message.content && !isStreamingMessage && !message.isError && (
                       <div className="space-y-3">

@@ -1,0 +1,12 @@
+{
+  "port_congestion_readings": [
+    {
+      "port_locode": "NGLOS",
+      "delay_days": 6.0,
+      "queue_vessels": 28,
+      "source": "scenario_ship_007_demurrage_risk",
+      "detail": "Severe congestion spike at Tin Can. Extended berth wait expected.",
+      "observed_at": "2026-04-02T06:00:00Z"
+    }
+  ]
+}

@@ -353,6 +353,16 @@ class StandbyAgentService:
             or (now - agent.last_fired_at).total_seconds() >= agent.cooldown_seconds
         )
         should_fire = result.matched and not agent.last_match_state and cooldown_allows_fire
+        logger.info(
+            "standby_agent_fire_decision",
+            agent_id=agent.id,
+            condition_matched=result.matched,
+            will_fire=should_fire,
+            last_match_state=agent.last_match_state,
+            cooldown_allows_fire=cooldown_allows_fire,
+            trigger_type=agent.trigger_type,
+            shipment_id=agent.shipment_id,
+        )
         output = None
         if should_fire:
             agent.last_fired_at = now
@@ -421,10 +431,10 @@ class StandbyAgentService:
                     "booking_ref": status.booking_ref,
                     "freshness_warning": status.freshness_warning,
                     "eta_freshness": status.eta_confidence.freshness if status.eta_confidence else None,
-                    "eta_estimate": str(status.eta_confidence.estimate) if status.eta_confidence and status.eta_confidence.estimate else None,
+                    "eta_estimate": str(status.eta_confidence.declared_eta) if status.eta_confidence and status.eta_confidence.declared_eta else None,
                     "navigation_status": status.latest_position.navigation_status if status.latest_position else None,
                     "destination": status.latest_position.destination_text if status.latest_position else None,
-                    "speed_knots": status.latest_position.speed_knots if status.latest_position else None,
+                    "speed_knots": status.latest_position.sog_knots if status.latest_position else None,
                 })
                 continue
 
@@ -700,13 +710,9 @@ class StandbyAgentService:
             return None
 
         latest = max(observations, key=lambda observation: observation.observed_at)
-        haystack = " ".join(
-            [
-                latest.status or "",
-                latest.event_type or "",
-                latest.detail or "",
-            ]
-        ).lower()
+        # Only check structured fields (status, event_type) — not free-text detail,
+        # which may mention "anchorage" in a negative context (e.g. "not yet reached anchorage").
+        haystack = " ".join([latest.status or "", latest.event_type or ""]).lower()
         if "anchor" in haystack:
             return latest
         return None
