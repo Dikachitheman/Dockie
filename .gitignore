@@ -13,7 +13,12 @@
 # Never commit secrets
 **/.env
 **/.env.*
-# !**/.env.example
+# Allow .env.example to be committed (keep other env files ignored)
+!**/.env.example
+
+# Allow top-level README and ARCHITECTURE files
+!/README.md
+!/ARCHITECTURE.md
 
 # Ignore dependency/build folders
 **/node_modules/
