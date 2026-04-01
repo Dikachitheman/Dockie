@@ -210,6 +210,3 @@ Recommended setup:
 
 - **Geospatial & caching**: PostGIS-powered spatial queries and Redis-backed caching with single-flight rebuild locking for expensive shipment-status calculations.
 
-## Parallel Tooling
-
-... (content truncated for brevity)
