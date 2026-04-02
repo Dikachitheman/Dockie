@@ -257,7 +257,7 @@ Use `apply_scenario` when you want to create visible business-state changes such
 
 ## Demos
 
-- Updated demo: https://drive.google.com/file/d/1AqjEcHZE6TnW_NDLSXtZNV1D6hytSci9/view?usp=sharing
+- Updated demo (includes: Standby agents, web search in chat): https://drive.google.com/file/d/1AqjEcHZE6TnW_NDLSXtZNV1D6hytSci9/view?usp=sharing
 - Earlier demo: https://drive.google.com/file/d/1nyMshr1d7rUFHFV4JSNZ5OIQq7EbWHqf/view?usp=sharing
 
 ## More detailed docs
