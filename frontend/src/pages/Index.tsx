@@ -476,8 +476,8 @@ const Index = ({ user }: { user?: User }) => {
     <div className="flex h-screen overflow-hidden bg-white pt-14 md:pt-0">
       <AppSidebar activeView={activeView} onViewChange={handleViewChange} unreadNotifications={unreadNotifications} user={user} />
 
-      {(visitedViews.has("shipments") || visitedViews.has("tracking")) && (
-        <div className={activeView === "shipments" || activeView === "tracking" ? "" : "hidden"}>
+      {visitedViews.has("shipments") && (
+        <div className={activeView === "shipments" ? "" : "hidden"}>
           <ShipmentList shipments={shipments} selectedId={selectedShipmentId} onSelect={setSelectedShipmentId} />
         </div>
       )}
@@ -518,7 +518,7 @@ const Index = ({ user }: { user?: User }) => {
           ) : shipmentLoading || !shipmentForPanels ? (
             <LoadingPane text="Loading tracking details" />
           ) : (
-            <TrackingView shipment={shipmentForPanels} shipments={shipments} />
+            <TrackingView shipment={shipmentForPanels} shipments={shipments} onSelectShipment={setSelectedShipmentId} />
           )}
         </div>
       )}

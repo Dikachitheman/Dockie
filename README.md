@@ -261,9 +261,9 @@ Trigger: anchorage_status — FALSE when vessel is underway, TRUE when at anchor
 
 FALSE base state — vessel is underway approaching Tema, no anchor:
 
-
+```bash
 python -m app.cli.commands apply_scenario scenario_ship_004_underway
-Create the agent (should NOT fire because vessel is underway):
+# Create the agent (should NOT fire because vessel is underway):
 
 
 python -m app.cli.commands create_standby_agent \
@@ -273,20 +273,20 @@ python -m app.cli.commands create_standby_agent \
   30 \
   test-user \
   dikachi.anosike@gmail.com
-Copy the agent id from the output.
+# Copy the agent id from the output.
 
 First run — expect will_fire=False, condition_matched=False:
 
 
 python -m app.cli.commands run_standby_agent <agent-id> test-user
-You'll see standby_agent_fire_decision log with will_fire=False.
+# You'll see standby_agent_fire_decision log with will_fire=False.
 
-Flip to TRUE state — vessel arrives at anchor:
+# Flip to TRUE state — vessel arrives at anchor:
 
 
 python -m app.cli.commands apply_scenario scenario_ship_004_anchor_arrival
-Second run — expect will_fire=True, agent fires:
-
+# Second run — expect will_fire=True, agent fires:
+```
 
 python -m app.cli.commands run_standby_agent <agent-id> test-user
 You'll see standby_agent_fire_decision with will_fire=True and action_executed=email_queued.
@@ -431,4 +431,8 @@ Available site base URLs (from `fake-websites/sources.json`):
 - https://fake-websites-d9wp.vercel.app/
 
 Each site exposes a `search-index.json` endpoint (for example `https://fake-websites-zqv2.vercel.app/search-index.json`) which is used by the fake web search indexer.
+```
+### Link to the demo
+
+https://drive.google.com/file/d/1nyMshr1d7rUFHFV4JSNZ5OIQq7EbWHqf/view?usp=sharing
 

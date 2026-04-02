@@ -231,6 +231,7 @@ export default function ShipmentMap({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
   const didFitBoundsRef = useRef(false);
+  const lastSelectedShipmentIdRef = useRef<string | null>(null);
 
   const displayedShipments = useMemo(() => {
     const merged = new Map<string, Shipment>();
@@ -259,14 +260,27 @@ export default function ShipmentMap({
 
     mapInstanceRef.current = map;
     layerGroupRef.current = L.layerGroup().addTo(map);
-
     window.setTimeout(() => map.invalidateSize(), 100);
 
+    const resizeObserver = typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(() => {
+        window.requestAnimationFrame(() => {
+          map.invalidateSize();
+        });
+      })
+      : null;
+
+    if (resizeObserver && mapRef.current) {
+      resizeObserver.observe(mapRef.current);
+    }
+
     return () => {
+      resizeObserver?.disconnect();
       map.remove();
       mapInstanceRef.current = null;
       layerGroupRef.current = null;
       didFitBoundsRef.current = false;
+      lastSelectedShipmentIdRef.current = null;
     };
   }, [compact]);
 
@@ -311,6 +325,7 @@ export default function ShipmentMap({
 
         const clusters = buildEventClusters(item, points);
         const segmentColors = buildSegmentColors(points, clusters);
+
         for (let segmentIndex = 0; segmentIndex < points.length - 1; segmentIndex += 1) {
           L.polyline(
             [
@@ -350,22 +365,38 @@ export default function ShipmentMap({
       }
     });
 
-    if (bounds.isValid() && !didFitBoundsRef.current) {
-      map.fitBounds(bounds.pad(compact ? 0.14 : 0.18));
+    const selectedShipment = shipmentsWithTrack.find((item) => item.shipment.shipmentId === selectedId) ?? null;
+    const selectedBounds = L.latLngBounds([]);
+
+    if (selectedShipment) {
+      selectedShipment.points.forEach((point) => selectedBounds.extend([point.latitude, point.longitude]));
+      if (selectedShipment.shipment.currentPosition) {
+        selectedBounds.extend([selectedShipment.shipment.currentPosition.latitude, selectedShipment.shipment.currentPosition.longitude]);
+      }
+    }
+
+    const selectedChanged = lastSelectedShipmentIdRef.current !== selectedId;
+    const boundsToFit = selectedBounds.isValid() ? selectedBounds : bounds;
+
+    if (boundsToFit.isValid() && (!didFitBoundsRef.current || selectedChanged)) {
+      map.fitBounds(boundsToFit.pad(compact ? 0.14 : 0.18));
       didFitBoundsRef.current = true;
     }
 
+    lastSelectedShipmentIdRef.current = selectedId;
     window.setTimeout(() => map.invalidateSize(), 50);
   }, [compact, displayedShipments, selectedShipmentId, shipment.shipmentId]);
 
   const hasAnyMapData = displayedShipments.some((item) => item.currentPosition || item.historyPoints.length > 0);
-  if (!hasAnyMapData) {
-    return (
-      <div className={`flex items-center justify-center rounded-[12px] bg-apple-surface ${compact ? compactHeightClass : "h-full min-h-full"}`}>
-        <p className="text-sm text-apple-secondary">No position data available</p>
-      </div>
-    );
-  }
 
-  return <div ref={mapRef} className={`overflow-hidden rounded-[12px] ${compact ? compactHeightClass : "h-full min-h-full"}`} />;
+  return (
+    <div className={`relative overflow-hidden rounded-[12px] ${compact ? compactHeightClass : "flex-1 min-h-[420px]"}`}>
+      <div ref={mapRef} className="h-full w-full" />
+      {!hasAnyMapData && (
+        <div className="absolute inset-0 flex items-center justify-center bg-apple-surface">
+          <p className="text-sm text-apple-secondary">No position data available</p>
+        </div>
+      )}
+    </div>
+  );
 }
