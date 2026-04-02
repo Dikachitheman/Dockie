@@ -257,6 +257,27 @@ Use `apply_scenario` when you want to create visible business-state changes such
 
 ## Demos
 
+### Updated demo walkthrough
+
+The updated demo is meant to show the app as an operational copilot, not just a chat box.
+
+- Agent workers are created from the `/agents` page.
+- A watcher is configured with an email action for `ship-004`.
+- That same agent then shows up in the related shipment chat as part of the working context.
+- A scenario command is run to change the specific event state that the watcher is waiting on.
+- Once the condition flips from false to true, the agent fires and sends an email.
+- The email shown in the demo is real demo output. I configured Resend with a verified domain I control so that flow could be demonstrated end to end.
+- Around `0:13`, the demo shows the first agent worker being created from the `/agents` page, configured to send email for `ship-004`, then triggered by a scenario change.
+- Around `2:27`, more agent workers are created for outputs like spreadsheets and documents. These later agents are pointed at a condition that is already true, so they fire immediately.
+- Around `3:54`, fired agents show up back in chat and in notifications, not just in the agents workspace.
+- Around `4:36`, chat components render in with gentler motion and easing instead of just appearing instantly. It is not perfect yet, but it is more intentional than hard cuts.
+- Around `5:30`, the chat shows agent planning and tool activity streaming before the final answer, with animated status rows and sliding transitions.
+- Around `5:40`, the app shows web-search results in chat. The result cards include source URLs and are clickable. These are fake websites built specifically for this project.
+- Around `6:56`, the demo shows using `@` in chat to select shipments.
+- Around `8:28`, the analytics dashboard is shown. The data there is mostly dummy/demo data and can be toggled off, but it exists to show the UI surface and the kinds of information the product could expose.
+- Around `9:02`, the tracking view shows cached shipment data, switching between shipments, highlighting the active shipment on the map, and rendering segmented route paths with different colors and stamps for events across the journey.
+- The home page is also shown as a summary view over the whole app rather than another empty landing screen.
+
 - Updated demo (includes: Standby agents, web search in chat): https://drive.google.com/file/d/1AqjEcHZE6TnW_NDLSXtZNV1D6hytSci9/view?usp=sharing
 - Earlier demo: https://drive.google.com/file/d/1nyMshr1d7rUFHFV4JSNZ5OIQq7EbWHqf/view?usp=sharing
 
