@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 from collections import defaultdict
 
+import sqlalchemy.exc
 from sqlalchemy import delete, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -156,9 +157,27 @@ class StandbyAgentService:
         if not agents:
             return 0
 
+        logger.info(
+            "standby_worker_batch_fetched",
+            count=len(agents),
+            agents=[
+                {"id": str(a.id), "user_id": a.user_id, "shipment_id": a.shipment_id, "trigger_type": a.trigger_type, "status": a.status}
+                for a in agents
+            ],
+        )
+
         processed = 0
         for agent in agents:
-            await self._evaluate_and_record(agent)
+            try:
+                await self._evaluate_and_record(agent)
+            except sqlalchemy.exc.InterfaceError as exc:
+                logger.error(
+                    "standby_agent_db_connection_lost",
+                    agent_id=str(agent.id),
+                    user_id=agent.user_id,
+                    error=str(exc.__cause__),
+                )
+                break  # connection is dead — stop processing this batch; next cycle gets a fresh session
             processed += 1
 
         await self._session.commit()
@@ -454,6 +473,14 @@ class StandbyAgentService:
                 )
 
             nav_status = (status.latest_position.navigation_status or "") if status.latest_position else ""
+            logger.info(
+                "standby_evaluate_nav_status",
+                agent_id=str(agent.id),
+                shipment_id=shipment_id,
+                trigger_type=agent.trigger_type,
+                nav_status=nav_status,
+                has_position=status.latest_position is not None,
+            )
             if agent.trigger_type == "anchorage_status" and "anchor" in nav_status.lower():
                 return StandbyEvaluationResult(
                     matched=True,

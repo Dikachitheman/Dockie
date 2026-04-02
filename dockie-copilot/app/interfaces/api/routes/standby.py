@@ -6,6 +6,7 @@ from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.standby_services import StandbyAgentService
+from app.core.logging import get_logger
 from app.infrastructure.database import get_db
 from app.interfaces.api.user_context import RequestUserContext, get_request_user_context
 from app.schemas.requests import (
@@ -16,6 +17,7 @@ from app.schemas.requests import (
 from app.schemas.responses import AgentOutputSchema, StandbyAgentSchema, UserNotificationSchema
 
 router = APIRouter(tags=["standby"])
+logger = get_logger(__name__)
 
 
 @router.post("/standby-worker/start")
@@ -93,8 +95,29 @@ async def create_standby_agent(
     db: AsyncSession = Depends(get_db),
     user: RequestUserContext = Depends(get_request_user_context),
 ):
+    logger.info(
+        "standby_agent_create_request",
+        user_id=user.user_id,
+        user_email=user.user_email,
+        shipment_id=payload.shipment_id,
+        action=payload.action,
+        interval_seconds=payload.interval_seconds,
+        condition_text=payload.condition_text,
+    )
     svc = StandbyAgentService(db)
-    return await svc.create_agent(user_id=user.user_id, user_email=user.user_email, payload=payload)
+    agent = await svc.create_agent(user_id=user.user_id, user_email=user.user_email, payload=payload)
+    logger.info(
+        "standby_agent_create_response",
+        agent_id=agent.id,
+        user_id=agent.user_id,
+        user_email=agent.user_email,
+        shipment_id=agent.shipment_id,
+        action=agent.action,
+        status=agent.status,
+        next_run_at=agent.next_run_at,
+        trigger_type=agent.trigger_type,
+    )
+    return agent
 
 
 @router.patch("/standby-agents/{agent_id}", response_model=StandbyAgentSchema)

@@ -1032,14 +1032,27 @@ export async function listStandbyAgents(): Promise<StandbyAgent[]> {
 }
 
 export async function createStandbyAgent(draft: StandbyAgentDraft): Promise<StandbyAgent> {
+  const payload = {
+    condition_text: draft.conditionText,
+    action: draft.action,
+    interval_seconds: draft.intervalSeconds,
+    shipment_id: draft.shipmentId ?? null,
+  };
+  console.info("[standby] createStandbyAgent request", {
+    apiBaseUrl: API_BASE_URL,
+    payload,
+  });
   const data = await fetchJson<StandbyAgentApi>("/standby-agents", {
     method: "POST",
-    body: JSON.stringify({
-      condition_text: draft.conditionText,
-      action: draft.action,
-      interval_seconds: draft.intervalSeconds,
-      shipment_id: draft.shipmentId ?? null,
-    }),
+    body: JSON.stringify(payload),
+  });
+  console.info("[standby] createStandbyAgent response", {
+    id: data.id,
+    user_id: data.user_id,
+    shipment_id: data.shipment_id,
+    action: data.action,
+    status: data.status,
+    next_run_at: data.next_run_at,
   });
   return toUiStandbyAgent(data);
 }

@@ -434,5 +434,8 @@ Each site exposes a `search-index.json` endpoint (for example `https://fake-webs
 ```
 ### Link to the demo
 
+# Demo (updated version: Includes creating agent workers, and chat agnt performing web search)
+https://drive.google.com/file/d/1AqjEcHZE6TnW_NDLSXtZNV1D6hytSci9/view?usp=sharing
+
 https://drive.google.com/file/d/1nyMshr1d7rUFHFV4JSNZ5OIQq7EbWHqf/view?usp=sharing
 
