@@ -19,9 +19,7 @@ from app.core.config import get_settings
 from app.models.orm import Base  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-if not os.environ.get("DATABASE_URL"):
-    load_dotenv(PROJECT_ROOT / ".env")
+load_dotenv(PROJECT_ROOT / ".env")
 
 # Alembic Config object
 config = context.config

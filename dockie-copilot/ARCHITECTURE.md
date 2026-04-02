@@ -1,224 +1,278 @@
-# Architecture
+# Backend Architecture
+
+This document covers the backend in `dockie-copilot/` only.
+
+- Whole-system architecture: [../ARCHITECTURE.md](../ARCHITECTURE.md)
+- Product framing and feature walkthrough: [../README.md](../README.md)
+
+## Scope
+
+The backend owns:
+
+- shipment APIs
+- ingest, refresh, and scenario flows
+- source health and source readiness
+- Google ADK agent runtime
+- AG-UI streaming endpoint
+- standby-agent persistence, evaluation, notifications, and outputs
+- geospatial APIs
+- fake-web supporting search
+
+It does not serve the frontend bundle. The React app lives in the sibling `frontend/` directory.
 
 ## Stack
 
-- Backend: Python, FastAPI, SQLAlchemy async, Alembic
-- Database: PostgreSQL with PostGIS-enabled image for local development
-- Agent runtime: Google ADK
-- Agent UI protocol: AG-UI streaming endpoint
-- Frontend: React + Vite in the sibling `frontend/` app
+- Python
+- FastAPI
+- SQLAlchemy async
+- Alembic
+- PostgreSQL
+- PostGIS
+- `pgvector` when available
+- Redis when configured
+- Google ADK for the agent runtime
 
-This project is built as a production-minded MVP for corridor-focused shipment tracking rather than a generic global vessel platform. The backend is responsible for ingest, normalization, persistence, freshness scoring, provenance, and grounded agent access. The frontend consumes those APIs to provide shipment switching, tracking, chat, map views, and source-health visibility.
+## Runtime Processes
 
-## System Shape
+### API process
 
-The backend follows a layered structure:
+The main app is created in `app/interfaces/api/app.py` and started through `app/main.py`.
 
-- `app/domain`
-  Pure logic for freshness, ETA confidence, and other business rules.
-- `app/application`
-  Orchestrates use cases and exposes structured tools for the agent.
-- `app/infrastructure`
-  Database access, normalization, source integrations, ingest, cache, and source policy.
-- `app/interfaces`
-  FastAPI routes and CLI commands.
-- `app/models`
-  SQLAlchemy ORM models mapped to Postgres tables.
-- `app/schemas`
-  Pydantic request and response contracts.
+At startup it:
 
-The frontend is intentionally separate so the backend remains usable as an API-driven service and the UI can evolve independently.
+- configures logging
+- checks database connectivity
+- checks cache connectivity
+- diagnoses ADK schema state
+- builds the ADK agent once and stores it on `app.state`
 
-## Data Flow
+### Standby-worker process
 
-The data flow is:
+The repo includes a separate `standby-worker` container. In Docker Compose it runs:
 
-1. Source payloads are fetched from fixtures and optionally live overlays.
-2. Raw upstream payloads are persisted first in `raw_events`.
-3. Payloads are checked for hostile content and validation failures.
-4. Invalid or unsafe payloads are stored in `quarantined_events` with reasons.
-5. Valid payloads are normalized into canonical records such as shipments, vessels, latest positions, evidence, and voyage events.
-6. Read APIs and agent tools assemble shipment status, history, ETA confidence, and supporting context from those normalized tables.
+1. `alembic upgrade head`
+2. `python -m app.cli.commands ingest_if_empty`
+3. `python -m app.cli.commands standby_worker`
 
-This keeps the ingest path auditable and prevents malformed or stale data from silently replacing trusted state.
+That worker:
 
-## Agent Design
+- polls for due standby agents
+- evaluates them
+- dispatches actions
+- processes queued digests
 
-The agent runtime is implemented with Google ADK and exposed over AG-UI-compatible streaming routes.
+There is also a dev-only HTTP-started worker path, but the separate worker container is the main intended runtime shape in this repo.
 
-Core files:
+### Docker Compose shape
 
-- `app/application/adk_agent.py`
-- `app/application/agent_tools.py`
-- `app/interfaces/api/routes/agent_run.py`
+Compose currently starts three services:
 
-The agent is constrained to structured tool access rather than direct free-form answering. Current tools include:
+- `db`
+- `app`
+- `standby-worker`
+
+Important grounded note:
+
+- the `app` container still runs `uvicorn ... --reload`
+- this is convenient for local and demo use, not the final production deployment shape
+
+## Backend Layers
+
+The backend is intentionally layered.
+
+### `app/domain`
+
+Pure logic and domain models.
+
+- freshness scoring
+- ETA confidence logic
+- core business rules
+
+### `app/application`
+
+Use-case orchestration.
+
+- shipment services
+- source health services
+- app bootstrap assembly
+- agent tool wrappers
+- standby-agent orchestration
+
+### `app/infrastructure`
+
+I/O and persistence.
+
+- database engine and session
+- repositories
+- cache
+- fake-web search client
+- email integration
+- ingest and simulated ingest
+- source adapters and policies
+- embeddings service
+
+### `app/interfaces`
+
+External entry points.
+
+- FastAPI routes
+- CLI commands
+
+### `app/models` and `app/schemas`
+
+- SQLAlchemy ORM models
+- Pydantic request and response contracts
+
+## Core Backend Flows
+
+### 1. Shipment data flow
+
+The backend follows a raw-first ingest model:
+
+1. source payloads are fetched
+2. raw payloads are persisted first
+3. validation and hostile-content checks run
+4. invalid data is quarantined
+5. valid data is normalized into shipments, vessels, positions, evidence, revisions, and events
+
+This keeps the ingest path inspectable and prevents malformed or stale upstream data from silently becoming trusted state.
+
+### 2. App bootstrap flow
+
+`AppBootstrapService` assembles the first-load payload used by the frontend. It gathers, in parallel:
+
+- shipment summaries
+- source health
+- standby agents
+- notifications
+- agent outputs
+
+This exists to reduce frontend first-load fan-out.
+
+### 3. Shipment read flow
+
+The read model is centered around:
+
+- shipment summaries
+- shipment detail
+- shipment status
+- shipment history
+- shipment bundle
+
+`ShipmentService` handles these compositions and uses cache where configured.
+
+### 4. Agent flow
+
+The ADK agent is exposed through `/agent/run`.
+
+The backend agent is tool-constrained. It does not answer from free text alone. Current tool surface includes:
 
 - list shipments
 - get shipment status
 - get shipment history
 - get vessel position
 - search knowledge base
-- get ETA revisions
-- get port context
+- search supporting context
+- web search
+- ETA revisions
+- port context
+- clearance checklist
+- realistic ETA
+- demurrage exposure
+- shipment comparison
+- vessel anomaly detection
+- vessel swap check
+- PostGIS proximity helpers
 
-The instruction layer explicitly tells the model to:
+That tool boundary is one of the main grounding mechanisms in the backend.
 
-- answer only from tool results
-- surface freshness and uncertainty
-- avoid inventing positions or ETAs
-- ignore prompt-like content found in shipment fields or retrieved text
-- preserve session focus for follow-up questions
+### 5. Standby-agent flow
 
-This is the main guardrail against hallucination and prompt injection from untrusted shipment or source content.
+Standby agents are persisted records with:
 
-## Retrieval And Structured Context
-
-Instead of a separate vector database, this MVP uses structured retrieval from operational tables:
-
-- shipment evidence
-- voyage events
-- ETA revision logs
-- port observations
-- source readiness metadata
-- source health records
-
-`KnowledgeBaseService` ranks snippets by lightweight token matching and returns evidence that is useful for “why,” “what changed,” and “how reliable is this” questions. This keeps the system simple while still grounded in persisted operational state.
-
-## Rich UI In Chat
-
-The frontend chat consumes the AG-UI stream from `/agent/run` and renders:
-
-- conversational messages
-- shipment detail cards
-- compact map cards
-- source-readiness context
-- retrieved evidence context
-
-The current implementation uses frontend-side heuristics to decide when to show some rich cards. A next step would be to make those cards fully agent-directed through structured AG-UI state so the model can intentionally request map or evidence components instead of relying on keyword detection.
-
-## Freshness, Degradation, And Evidence
-
-Freshness and degradation are first-class parts of the backend.
-
-- Source policies define source class, automation safety, business-safe default, and fallback behavior.
-- Source health records store last success timestamps, stale windows, and degraded reasons.
-- Domain logic computes freshness and ETA confidence from declared ETA plus latest trusted live position.
-- If live position data is stale or unavailable, the API returns lower confidence and explicit freshness warnings.
-- Evidence and source metadata are surfaced through the API and shown in the frontend.
-
-This helps the assistant answer “How reliable is this?” honestly instead of sounding certain when data is stale.
-
-## Security Decisions
-
-The project is designed around the assumption that upstream and manual data are untrusted.
-
-- Raw payloads are stored inertly before normalization.
-- Malicious or malformed payloads are quarantined with reasons.
-- Control characters and unsafe URL schemes are normalized or rejected.
-- Database writes use SQLAlchemy and parameterized statements.
-- Agent instructions explicitly forbid following instructions embedded in retrieved content.
-- API error handling avoids leaking stack traces to clients.
-
-One remaining hardening task is frontend rendering: assistant content should be escaped before HTML rendering so hostile strings can never become executable in the browser.
-
-## Local Operations
+- user scope
+- shipment scope
+- condition text
+- trigger classification
+- interval and cooldown
+- last-check and last-fire state
 
 The backend supports:
 
-- `alembic upgrade head` for migrations
-- `python -m app.cli.commands ingest` for baseline fixture ingestion
-- `python -m app.cli.commands refresh` for the challenge refresh fixture workflow
-- `python -m app.cli.commands live_refresh` for connector-driven live refresh workflows
-- `python -m app.cli.commands health` for source-health inspection
+- CRUD over `/standby-agents`
+- manual execution over `/standby-agents/{id}/run`
+- notification listing
+- agent-output listing
+- digest processing
 
-Docker Compose is included for local reproducibility, and the frontend can be run separately against the FastAPI backend.
+The current evaluation model is still a pragmatic polling loop, not a full workflow engine.
 
-## Trade-Offs
+### 6. Search and retrieval flow
 
-- Structured retrieval was chosen over a larger RAG stack to keep the MVP grounded and maintainable.
-- Fixtures are used as a stable baseline so the product still works when live sources are unavailable.
-- Live sources are treated as overlays because maritime public sources are often stale, fragile, or policy-limited.
-- The frontend and backend are separate apps, which adds setup overhead but improves service boundaries.
-- Some rich chat behavior is still UI-driven rather than fully agent-directed; this keeps the MVP practical but leaves room for a stronger AG-UI implementation.
+There are two supporting-context paths today:
 
-## What I Would Improve With Two More Weeks
+- structured knowledge search over operational tables and document chunks
+- fake-web search over a deployed, controlled fake-web corpus
 
-- Move rich chat cards to explicit structured AG-UI state emitted by the agent.
-- Add stronger frontend sanitization and more security-focused UI tests.
-- Add end-to-end browser tests for shipment switching, voice flow, chat streaming, and stale-source scenarios.
-- Add a single top-level submission README covering both apps together.
-- Add better source-failure simulations and observability around live refresh jobs.
-- Add optional analyst tooling such as a clearer “what changed and why” timeline.
+Important grounded nuance:
 
-## AI Tooling And Validation
+- vector embeddings already exist in the backend and are used for document chunks when available
+- retrieval is still mixed: operational tables are largely structured and lexical, while document chunks can use vector ranking
+- this is better than pure keyword matching alone, but it is still not the final retrieval architecture
 
-AI tools helped accelerate implementation and iteration, especially around scaffolding, refactors, and comparing the app against the project definition. Manual validation was still required for:
+## Data Categories
 
-- application structure
-- API shape alignment
-- ingest and normalization rules
-- source policy behavior
-- freshness logic
-- malicious payload handling
-- UI/backend integration
+The main backend data categories are:
 
-The goal throughout was not just to ship a demo, but to keep the behavior inspectable, grounded, and honest about uncertainty.
+- raw events and quarantined events
+- normalized shipments, vessels, latest positions, and voyage events
+- ETA revisions and port observations
+- source health and source readiness metadata
+- clearance, congestion, demurrage, carrier performance, and other decision-support tables
+- document chunks and embeddings
+- standby agents, runs, digest queue items, notifications, and generated outputs
 
-## Project-definition mapping
+## Identity And Session Handling
 
-- **Standby agents**: Implemented — background watcher service and evaluation/dispatch pipeline are implemented in [dockie-copilot/app/application/standby_services.py](dockie-copilot/app/application/standby_services.py). CLI helpers and a worker loop (`standby_worker`) are available in [dockie-copilot/app/cli/commands.py](dockie-copilot/app/cli/commands.py).
+The backend accepts user and session context through:
 
-- **Simulated web search**: Implemented — `FakeWebClient` provides remote-first simulated web search and is used by `web_search` and `search_supporting_context` tools. See [dockie-copilot/app/infrastructure/fake_web.py](dockie-copilot/app/infrastructure/fake_web.py).
+- bearer auth when Supabase JWT verification is configured
+- `X-User-ID`
+- `X-User-Email`
+- `X-Session-ID`
 
-- **Google ADK & AG-UI**: The ADK is used as the agent runtime (`app/application/adk_agent.py`) and the system exposes AG-UI-compatible streaming endpoints consumed by the frontend. However, ADK *integrations* (catalog connectors such as pre-built email connectors) were not integrated in this submission — standby emails use a Supabase Edge Function pattern instead ([dockie-copilot/app/infrastructure/email.py](dockie-copilot/app/infrastructure/email.py)).
+In practice, this means:
 
-- **Frontend requirements**: The sibling frontend implements shipment list, multi-shipment switching, chat streaming, voice input/playback, and map cards (see [frontend/src/components/ChatPanel.tsx](frontend/src/components/ChatPanel.tsx)).
+- authenticated flows can be verified through JWKS
+- local and demo flows can still work through explicit headers and session ids
 
-## Missing / Next Steps
+This is grounded and useful for the demo, but it is still lighter than a fully hardened production auth model.
 
-- Wire ADK integration connectors (email reminders, calendar, other third-party actions) using the Google ADK integrations catalog.
-- Move rich chat cards to explicit, agent-emitted AG-UI structured state (currently the UI uses heuristics to decide when to show cards).
-- Add more end-to-end tests around standby agents, digest generation, and secure UI rendering.
+## What Is Grounded Today
 
-This explicit mapping is intended to make the trade-offs visible in the ARCHITECTURE explanation and to guide next work if you want me to implement any of the remaining pieces.
+- The backend really is separate from the frontend.
+- The agent really is built once at startup and reused.
+- The standby worker really runs as a separate container in compose.
+- The backend really does support cached shipment status and history reads.
+- The fake-web search really is simulated and routed through a controlled registry.
+- Vector retrieval really does exist already for document chunks.
 
-## Hardening & load-test findings
+## Current Trade-Offs
 
-This section summarises the most important load, scaling, and reliability findings discovered during the checklist review and code analysis (see [notes/claude_analysis.txt](notes/claude_analysis.txt#L1-L182)). Use this as a short runbook for hardening and verification.
+- Compose is still tuned for local and demo use, not production process management.
+- The standby worker is a polling worker, not a workflow engine.
+- Retrieval is grounded, but not yet a full hybrid RAG system across all entity types.
+- Fake-web search is useful for demoing external context, but it is not proper production web search.
+- Some user-facing behavior still depends on frontend heuristics rather than explicit agent-driven UI state.
 
-High-priority items
+## Two More Weeks
 
-- **Session consistency across workers**: ADK session storage defaults to in-memory in dev, which causes split conversations and missing history when using multiple backend processes. Short-term mitigation: set `ADK_SESSION_BACKEND=redis` and configure `REDIS_URL`. See `app/application/adk_agent.py` for the session service builder.
+If I had two more weeks focused on the backend, I would prioritize:
 
-- **Cache disabled by default**: local/dev .env may leave `REDIS_URL` unset, resulting in the null cache backend and cache stampedes on expiry. Enable Redis in staging and production to activate single-flight protections (see `app/infrastructure/cache.py`).
-
-- **API fan-out on first load**: the frontend bootstraps many endpoints in parallel (list, source-health, bundle, threads). Prefer a single `/app-bootstrap` endpoint to reduce concurrent load during first-page view.
-
-- **Expensive knowledge search**: `KnowledgeBaseService.search()` scans many artifact tables and ranks client-side; the UI also calls it twice per chat turn. Remove the duplicate call and consider caching or synonym expansion to reduce CPU and DB queries.
-
-- **DB indexes**: add indexes on `positions.mmsi`, `positions.imo`, and `positions.observed_at` to avoid scans and speed history queries.
-
-Medium-priority items
-
-- **Frontend render & streaming throttling**: throttle streaming deltas to avoid re-render storms and smooth scroll updates.
-- **Shipment list/map scaling**: add pagination/virtualization and reuse Leaflet instances rather than re-creating maps per card.
-
-What has been implemented (checklist highlights)
-
-- Redis-backed ADK session service + graceful in-memory fallback.
-- Cache single-flight protection for expensive shipment status builds when Redis is present.
-- Consolidated first-load bootstrap (`/app-bootstrap`) to reduce frontend fan-out.
-- Reduced eager-loading of heavy evidence collections for list endpoints.
-- Standby-agent deletion cleanup and digest/email support (Supabase Edge Function by default).
-- Map improvements (segmented lines, thicker tracks, event stamps) and streaming failure hardening.
-
-Outstanding / recommended next work
-
-1. Enable Redis-backed sessions in staging and production and validate across multiple backend workers.
-2. Add the proposed DB indexes and run explain plans against representative datasets.
-3. Add a small load-test harness (`tools/loadtest/`) and run targeted scenarios against `/agent/run`, `/shipments`, and `/app-bootstrap`.
-4. Replace double-knowledge search in the UI and implement backend-side prefetching where appropriate.
-5. Add tests for parallel tool execution, partial failures, and final answer synthesis correctness under concurrent tool responses.
-
-If you'd like, I can open PRs to add the load-test harness and the migration to add the `positions` indexes, or I can implement Redis session onboarding and a short verification checklist.
+- Better use of vector embeddings. Expand from document chunks into hybrid retrieval and richer cross-source grounding so the agent can connect shipment state, notes, documents, and operational context more effectively.
+- Real ETL for ingestion. Replace more of the current CLI-oriented ingest path with clearer extraction, transform, load, reconciliation, and monitoring workflows.
+- Better worker tech and more worker functionality. Move standby processing, digests, long-running report generation, and other async work onto a more durable worker and scheduler model.
+- AWS deployment. Package API, worker, Postgres, Redis, logs, secrets, and object storage into a cleaner deploy target.
+- Proper web search. Replace the fake-web demo flow with a real search and source-ingestion strategy, while preserving trust and provenance controls.
+- Better voice using live Google ADK. Add live multimodal sessions instead of relying on browser-only speech features.
+- A stronger likely-vessel discovery engine. Build a candidate-ranking service that can infer the most likely vessel from sparse shipment facts using lane, ETA proximity, voyage code, route intent, and live movement, then return a formal confidence score and explanation.
