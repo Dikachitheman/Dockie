@@ -201,7 +201,7 @@ Recommended setup:
 
 - **Geospatial & caching**: PostGIS-powered spatial queries and Redis-backed caching with single-flight rebuild locking for expensive shipment-status calculations.
 
-## Project definition — what we implemented
+## Project definition — what was implemented
 
 - **Satisfied**:
   - **Python backend (FastAPI)**: implemented under [dockie-copilot/app](dockie-copilot/app).
@@ -386,7 +386,7 @@ Per the implementation checklist, the repo already contains a number of hardenin
 2. Add database indexes for `positions` access patterns and verify with a simple explain plan on large datasets.
 3. Add a short-lived lock for cache-miss rebuilds where Redis is enabled (SETNX-based single-flight) and increase DB pool for API vs worker processes.
 4. Remove double knowledge-search from the frontend; consider a backend-side prefetch that returns both knowledge and supporting context in one call.
-5. Add a small k6/wrk/hey load-test harness under `tools/loadtest/` (I can add this for you).
+5. Add a small k6/wrk/hey load-test harness under `tools/loadtest/`.
 
 ### Quick verification & load-test commands
 
