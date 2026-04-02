@@ -432,10 +432,11 @@ Available site base URLs (from `fake-websites/sources.json`):
 
 Each site exposes a `search-index.json` endpoint (for example `https://fake-websites-zqv2.vercel.app/search-index.json`) which is used by the fake web search indexer.
 ```
-### Link to the demo
+# Link to the demo
 
-# Demo (updated version: Includes creating agent workers, and chat agnt performing web search)
+### Demo (updated version: Includes creating agent workers, and chat agnt performing web search)
 https://drive.google.com/file/d/1AqjEcHZE6TnW_NDLSXtZNV1D6hytSci9/view?usp=sharing
 
+### Demo
 https://drive.google.com/file/d/1nyMshr1d7rUFHFV4JSNZ5OIQq7EbWHqf/view?usp=sharing
 
