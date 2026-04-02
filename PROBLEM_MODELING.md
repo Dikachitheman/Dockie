@@ -2,8 +2,6 @@
 
 These notes capture the product-modeling direction behind Dockie: who the real users are, what they are actually anxious about, and which agentic workflows matter most on the US-West Africa ro-ro corridor.
 
-This is the tracked, root-level version of the rough working notes in `notes/what_is_left.txt`.
-
 ## Who Actually Uses This Product
 
 ### The importer / freight forwarder
