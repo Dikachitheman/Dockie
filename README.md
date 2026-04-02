@@ -9,7 +9,7 @@ This project started from a simple prompt in the take-home: an agent should answ
 - Has anything changed enough that I need to act?
 - Can someone watch this for me instead of me refreshing the app all day?
 
-That is the lens I used to build the project. I tried to model the product around what real importers, freight forwarders, and operations people actually experience: multiple active shipments, uncertain ETAs, stale data, anchorage waits, port congestion, and the need to react before costs stack up.
+That is the lens I used to build the project. I tried to model the product around what real importers, freight forwarders, and operations people actually experience: multiple active shipments, uncertain ETAs, stale data, anchorage waits, port congestion, and the need to react before costs stack up. I wrote up the fuller problem-modeling notes in [PROBLEM_MODELING.md](PROBLEM_MODELING.md).
 
 ## Product thinking
 
@@ -285,3 +285,4 @@ The updated demo is meant to show the app as an operational copilot, not just a 
 
 - Backend implementation details: `dockie-copilot/README.md`
 - Architecture notes: `ARCHITECTURE.md`
+- Problem-modeling notes behind the product direction: `PROBLEM_MODELING.md`

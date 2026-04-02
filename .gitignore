@@ -19,6 +19,7 @@
 # Allow top-level README and ARCHITECTURE files
 !/README.md
 !/ARCHITECTURE.md
+!/PROBLEM_MODELING.md
 
 # Ignore dependency/build folders
 **/node_modules/
