@@ -120,6 +120,8 @@ When to use which:
 - Fixtures remain the stable baseline dataset.
 - Live sources can refresh on top of that baseline when they are enabled and reachable.
 - Simulated refreshes and scenarios are separate from live refresh and exist to drive the demo into known states.
+- AISStream is integrated as a bounded live overlay and diagnostic capture path, but the main testing loop shifted toward fixture JSONs, simulated refreshes, and scenario files because live AIS updates were not predictable enough for repeatable demos or load testing.
+- That fixture-first flow lets us force known state transitions on demand, which matters for standby agents, ETA-change scenarios, stale-data checks, and frontend verification.
 - Source readiness is visible at `GET /sources/readiness`.
 - Shipment-critical answers should still come from backend shipment state, not from fake-web narrative context.
 
@@ -232,8 +234,8 @@ These are the most useful variables to know about:
 | `APP_ENV` | Environment name | `development` |
 | `LOG_LEVEL` | Logging verbosity | `INFO` |
 | `ADK_MODEL` | Google ADK model name | `gemini-3-flash-preview` |
-| `ADK_SESSION_BACKEND` | ADK session backend | `memory` |
-| `REDIS_URL` | Redis cache/session URL | unset |
+| `ADK_SESSION_BACKEND` | ADK session backend (`database` or `redis` recommended for shared state) | `memory` |
+| `REDIS_URL` | Redis cache/session URL for shared cache and optional Redis-backed ADK sessions | unset |
 | `CACHE_PREFIX` | Cache namespace prefix | `dockie` |
 | `OPENAI_API_KEY` | Enables embeddings generation | unset |
 | `GOOGLE_API_KEY` | Enables the ADK model runtime | unset |
@@ -249,15 +251,34 @@ These are the most useful variables to know about:
 - If `CACHE_ENABLED=true` but `REDIS_URL` is missing, caching falls back to the null backend.
 - If `REDIS_URL` is set, shipment lists, shipment status, shipment history, and source health can use Redis-backed JSON caching.
 - Cache-miss rebuilds use a single-flight lock so multiple workers do not stampede the same expensive status calculation.
-- `ADK_SESSION_BACKEND` defaults to `memory`, which is fine for single-process local work but not ideal for multi-worker deployment.
-- The repo includes a Redis-backed ADK session service for stronger session continuity when Redis is configured.
+- `ADK_SESSION_BACKEND` supports `memory`, `database`, and `redis`.
+- The checked-in `.env.example` uses `database` so agent thread state survives across backend processes without depending on per-process memory.
+- The repo also includes a Redis-backed ADK session service for deployments that want shared cache and shared sessions in the same tier.
+- `memory` is still available as a lightweight fallback for single-process local work, but it is not the recommended mode for multi-worker deployment.
 - `search_supporting_context` runs knowledge search and fake-web search together in parallel for mixed questions.
 - `web_search` is supporting context, not the source of truth for shipment state.
 - Embeddings already exist for document chunks. Vector similarity search is used when embeddings are available and `KNOWLEDGE_VECTOR_BACKEND=pgvector`.
 
+## What Changed After The Load Review
+
+Several issues from the earlier load-review pass are now handled differently in code:
+
+- Session continuity: the ADK runtime no longer has to rely on in-memory sessions. `build_session_service()` supports `database` and `redis`, and the local example environment is configured to use `database` so `/agent/run` and `/agent/agents/state` can share persistent thread state.
+- First-load request fan-out: `GET /app-bootstrap` collapses the initial shell data into one request for shipments, source health, standby agents, notifications, and outputs. `GET /shipments/{id}/bundle` also collapses shipment detail, status, and history into one request per selected shipment.
+- Duplicate shipment loads: `ShipmentService.get_shipment_bundle()` loads the shipment once, then passes the same ORM object into the status and history builders so those paths do not each re-fetch the shipment row.
+- Shipment list over-fetching: the list endpoint now uses `ShipmentRepository.get_all_summary()` instead of the full eager-loaded path, so shipment summaries do not pull every evidence row into memory.
+- Cache coordination: shipment status/history and source health are cacheable, and shipment-status rebuilds use a single-flight coordinator so only one worker should do the expensive rebuild when Redis is available.
+- Knowledge-search churn: the frontend now only performs the post-answer `searchKnowledgeBase()` fallback when the agent did not already use `search_knowledge_base` or `search_supporting_context` during that turn.
+- Streaming and map pressure: the frontend reveal loop now buffers assistant text instead of rewriting the transcript on every tiny delta, and `ShipmentMap` reuses one Leaflet instance with layer updates instead of destroying and rebuilding the map for each render.
+- Position-history scale: the `positions` and `latest_positions` tables now include indexes for the MMSI/IMO lookup patterns used by shipment history and live-position lookups.
+
+These changes reduce the most obvious failure modes from the original review, but the backend is still demo-oriented in a few places. For real horizontal scale, pair shared sessions with Redis caching and run production workers without `--reload`.
+
 ## Key Design Decisions
 
 - Raw payloads are persisted into `raw_events` before normalization.
+- The JSONB `payload` column stores a PostgreSQL-safe copy of the source payload after control characters such as null bytes are stripped.
+- The `raw_payload_text` text column stores the serialized original payload so escaped sequences such as `\\u0000` are preserved for provenance, debugging, and security review.
 - Hostile or invalid payloads are quarantined instead of being silently trusted.
 - Older position updates do not overwrite fresher latest-position rows.
 - Text input is sanitized and URLs are checked so unsafe content does not flow straight through the system.

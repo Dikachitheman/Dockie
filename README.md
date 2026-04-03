@@ -187,14 +187,16 @@ For this demo:
 - Voice currently uses the browser APIs. It works for demo purposes, but the quality is not where I would want it for a polished product.
 - Some of the highest-value agentic ideas are present in direction and scaffolding, but not yet fully built out into complete production workflows.
 
-## With Two More Weeks
+## If I Had Two More Weeks
+
+If I had two more weeks on the project, I would focus on:
 
 - Better use of vector embeddings. The backend already has document-chunk vector retrieval; I would push that further so the agent can ground answers across documents, events, shipment notes, and operational context more intelligently.
 - Real ETL for ingestion. I would turn more of the current ingest and refresh flow into clearer extraction, transform, load, and reconciliation pipelines.
 - Better worker tech and more worker functionality. I would upgrade standby processing and other background work so monitoring, reports, digests, and longer-running actions are more durable and more capable.
 - AWS deployment. I would package the system for a cleaner production shape with separate API and worker deployments plus managed data infrastructure.
 - Proper web search. I would replace the fake-web demo layer with a real external search and retrieval path.
-- Docs in the chat text box. I would add inline help and capability hints while typing so people discover what the agent can do without reading docs first.
+- File and document attachments in the chat text box. I would let users add supporting files directly in the chat composer so the agent can reason over shipment documents and ad hoc evidence inside the same thread.
 - Better voice using live Google ADK. I would replace the current browser speech flow with a much stronger live multimodal experience.
 - A stronger likely-vessel discovery engine. I would add a candidate-ranking service that can infer the most likely vessel from sparse shipment facts using lane, ETA proximity, voyage code, route intent, and live movement, then produce a formal confidence score.
 - UI animation polish. I would spend time making transitions, reveals, streaming states, and motion feel more intentional across chat, tracking, and agent outputs.
