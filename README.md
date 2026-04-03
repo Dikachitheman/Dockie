@@ -185,6 +185,8 @@ For this demo:
 ## Known rough edges
 
 - Voice currently uses the browser APIs. It works for demo purposes, but the quality is not where I would want it for a polished product.
+- Responsive behavior across all screen sizes is not complete yet. The core flows work best on the layouts I focused on first, but some screens still need more attention for smaller devices and edge-case viewport sizes.
+- Authentication is not complete yet. The product direction assumes a fuller auth and user-account model, but that part of the system is still unfinished.
 - Some of the highest-value agentic ideas are present in direction and scaffolding, but not yet fully built out into complete production workflows.
 
 ## If I Had Two More Weeks
